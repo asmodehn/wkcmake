@@ -1,5 +1,0 @@
-- [IN PROGRESS] we need one test project per module, to make sure modules are found properly and can find and link system packages properly.
-- [IN PROGRESS] we need to review the codeblock project generated for A-B-C. There is a possibility to not have full path in C::B gui. We need to implement it
-- we need to review our compiler setup vs C++11
-- [IN PROGRESS] we need to not force compiler setup. because we cannot plan future cmake compiler options. and because other cmake projects( which can have WkCMake project dependencies) might have different compile / linking options
-- we need to have one consistent way of finding sources, headers, etc. ( target introspection like cppcheck, or directly like astyle... )
