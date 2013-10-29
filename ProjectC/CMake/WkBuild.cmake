@@ -482,7 +482,9 @@ endmacro(WkTarget)
 MACRO (WkExtData)
 
 	foreach ( data ${ARGN} )
-		ADD_CUSTOM_COMMAND( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${data} ${PROJECT_BINARY_DIR}/${WKCMAKE_DATA_DIR}/${data} COMMENT "Copying ${data} to ${PROJECT_BINARY_DIR}/${WKCMAKE_DATA_DIR}/${data}" )
+		FILE(TO_NATIVE_PATH "${data}" ${data}_NATIVE_SRC_PATH)
+		FILE(TO_NATIVE_PATH "${PROJECT_BINARY_DIR}/${WKCMAKE_DATA_DIR}/${data}" ${data}_NATIVE_BLD_PATH)
+		ADD_CUSTOM_COMMAND( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${${data}_NATIVE_SRC_PATH}" "${${data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${data}_NATIVE_SRC_PATH} to ${${data}_NATIVE_BLD_PATH}" )
 	endforeach ( data ${ARGN} )
 	
 ENDMACRO (WkExtData data_path)
