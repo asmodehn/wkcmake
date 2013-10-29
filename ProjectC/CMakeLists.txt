@@ -39,7 +39,8 @@ WkProject( ProjectC C )
 WkBuild( LIBRARY SHARED )
 
 WkDoc( )
-WkSvn( )
+#WkSvn( )
+#TODO : WkGit()
 
 #Testing
 WkTestBuild( maintestC )
