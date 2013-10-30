@@ -2,9 +2,10 @@ WkCmake tests
 =============
 
 WkCMake is aimed at simplifying CMake builds by making some assumptions :
- - The hierarchy of project you are using is usually similar between all of your projects,  a source directory, a header directory, some data and some tests, maybe...
- - You are only working on one project at a time, that is one main target only. Other target are only simple tests ( or unit tests ) without other dependencies than the main target.
- - It s easier to rerun "cmake" once, using the cached values on the build, rather than modifying many configuration files everywhere.
+
+- The hierarchy of project you are using is usually similar between all of your projects,  a source directory, a header directory, some data and some tests, maybe...
+- You are only working on one project at a time, that is one main target only. Other target are only simple tests ( or unit tests ) without other dependencies than the main target.
+- It s easier to rerun "cmake" once, using the cached values on the build, rather than modifying many configuration files everywhere.
 
 Making these assumption enable us to build a generic build framework, simple to use and very useful for many kind of C/C++ projects.
 
@@ -13,25 +14,33 @@ It contains a list of sample projects, that are used to test wkcmake.
 Each of these project refers to the master branch as a subtree
 
 To test one project on Windows :
-> cd <TestProject>
-> build.bat
+
+`> cd TestProject`<br/>
+`> build.bat`
 
 To test one project on Unix / Linux
-> cd <TestProject>
-> sh build.sh
+
+`> cd TestProject`<br/>
+`> sh build.sh`
 
 To get updates from wkcmake master branch using subtree command :
-> git subtree pull --prefix=<TestProject>/<CMakeDir> . master [--squash]
+
+`> git subtree pull --prefix=TestProject/CMakeDir . master [--squash]`
+> 
 The log on an uptodate subtree is :
-From .
- * branch	master -> FETCH_HEAD
-Already up-to-date
+>From . <br/>
+> * branch	master -> FETCH_HEAD <br/>
+>Already up-to-date
+
 
 To send updates to wkcmake master branch using subtree command :
-> git subtree push --prefix=<TestProject>/<CMakeDir> . master
+
+`git subtree push --prefix=TestProject/CMakeDir . master`
+
 The log on an uptodate subtree is :
-git push using: . master
-1/	2 (0)2/		2 (0) Everything up-to-date
+>git push using: . master <br/>
+>1/	2 (0)2/		2 (0) Everything up-to-date <br/>
+
 
 Project A - B - C
 =================
