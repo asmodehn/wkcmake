@@ -1,5 +1,5 @@
-wkcmake
-=======
+WkCmake tests
+=============
 
 WkCMake is aimed at simplifying CMake builds by making some assumptions :
  - The hierarchy of project you are using is usually similar between all of your projects,  a source directory, a header directory, some data and some tests, maybe...
@@ -8,21 +8,51 @@ WkCMake is aimed at simplifying CMake builds by making some assumptions :
 
 Making these assumption enable us to build a generic build framework, simple to use and very useful for many kind of C/C++ projects.
 
-WkCMake currently supports :
+This is the test branch of the wkcmake project.
+It contains a list of sample projects, that are used to test wkcmake.
+Each of these project refers to the master branch as a subtree
 
- - Only one main target per project hierarchy 
- - Few simple executable tests ( in test/ subdirectory ) that don't require additional dependencies
- - Target can be executable, library shared or static (module not tested yet, need a Mac...)
- - Auto after-build dependency ( in another Wk build directory, automatically finding and importing all needed files, run time libraries, etc. )
- - Auto AStyle source reformatting
- - Doxygen generated documentation
+To test one project on Windows :
+> cd <TestProject>
+> build.bat
 
-WkCMake will eventually support :
- - Simple Memory Leak detector for C/C++
- - Simple Profiler use ??
- - Generate UML diagrams from precompiled code ?? ( Need to find a proper XMI / UML diagram generator from source... )
- - Support cppunit ??
- - etc.
+To test one project on Unix / Linux
+> cd <TestProject>
+> sh build.sh
 
-Released under Modified BSD License. Please check the LICENSE.txt file.
+To get updates from wkcmake master branch using subtree command :
+> git subtree pull --prefix=<TestProject>/<CMakeDir> . master [--squash]
+The log on an uptodate subtree is :
+From .
+ * branch	master -> FETCH_HEAD
+Already up-to-date
+
+To send updates to wkcmake master branch using subtree command :
+> git subtree push --prefix=<TestProject>/<CMakeDir> . master
+The log on an uptodate subtree is :
+git push using: . master
+1/	2 (0)2/		2 (0) Everything up-to-date
+
+Project A - B - C
+=================
+This is an example hierarchy to be used along with WkCMake framework.
+In this Hierarchy A depends on B and B depends on C
+C is always a shared library or a module
+B is a library. it is up to the builder to make it a shared library, or a static one, and have it embedded in A
+The dependency mechanism should always detect which library are needed to link and run with A
+
+Modules tests
+=============
+MySql is a test project for the detection of libmysqlclient-dev library
+MySQL++ is a test project for the detection of libmysql++-dev library
+Bullet is a test project for the detection of Bullet physics engine - TODO : fix it : At the moment bullet doesnt support being in a shared library on amd64 architectures
+LuaJIT is a test project for the detection of LuaJIT
+
+TODO
+====
+- [ ] we need one test project per module, to make sure modules are found properly and can find and link system packages properly.
+- [ ] we need to review the codeblock project generated for A-B-C. There is a possibility to not have full path in C::B gui. We need to implement it
+- we need to review our compiler setup vs C++11
+- [ ] we need to not force compiler setup. because we cannot plan future cmake compiler options. and because other cmake projects( which can have WkCMake project dependencies) might have different compile / linking options
+- we need to have one consistent way of finding sources, headers, etc. ( target introspection like cppcheck, or directly like astyle... )
 
