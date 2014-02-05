@@ -29,8 +29,8 @@
 
 #Mandatory comands to use wkcmake
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)	
-INCLUDE ( CustomCMake/WkCMake.cmake )
-WkCMakeDir( CustomCMake )
+INCLUDE ( "Custom CMake/WkCMake.cmake" )
+WkCMakeDir( "Custom CMake" )
 
 #Configuration of custom directories
 WkSrcDir ( "Custom Src" )
@@ -51,7 +51,7 @@ WkDepends( ProjectC )
 WkBuild( LIBRARY SHARED )
 
 WkDoc( )
-WkSvn()
+#WkSvn()
 
 #Testing
 WkTestBuild( maintestB )
