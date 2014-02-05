@@ -27,33 +27,32 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-#Mandatory comands to use wkcmake
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)	
-INCLUDE ( "Custom CMake/WkCMake.cmake" )
-WkCMakeDir( "Custom CMake" )
 
-#Configuration of custom directories
-WkSrcDir ( "Custom Src" )
-WkIncludeDir ( "Custom Include" )
-WkBinDir ( "Custom Bin" )
-WkLibDir ( "Custom Lib" )
-WkDataDir ( "Custom Data")
-WkTestDir ( "Custom Test" )
-WkDocDir ( "Custom Doc" )
-WkTestDataDir ( "Custom Test Data Src")
-WkTestDataBuildDir ( "Custom Test Data Build")
+#TODO : Use SVN version to find > 1.1.0 : supports symbolic links :D
+#TODO : Use CMake > 2.6 : find subversion has been added
 
-#Project Declaration
-WkProject( ProjectB C )
+if ( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6 )
+	message ( FATAL_ERROR " CMAKE MINIMUM BACKWARD COMPATIBILITY REQUIRED : 2.6 !" )
+endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6 )
 
-#Build rules
-WkDepends( ProjectC )
-WkBuild( LIBRARY SHARED )
+#
+# Common use of Cmake in Wk
+#
 
-WkDoc( )
-#WkSvn()
 
-#Testing
-WkTestBuild( maintestB )
-WkTestData( maintestB data.txt )
-WkTestRun( ProjectB maintestB )
+macro (WkSvn)
+
+find_package(Subversion)
+if(Subversion_FOUND)
+	message(STATUS "== Retrieving SVN repository information...")
+	Subversion_WC_INFO(${PROJECT_SOURCE_DIR} ${PROJECT_NAME})
+	#This requires connection to the server which might be annoying...
+	#Subversion_WC_LOG(${PROJECT_SOURCE_DIR} ${PROJECT_NAME})
+	#message("Last changed log is ${${PROJECT_NAME}_LAST_CHANGED_LOG}")
+	# TODO : generate changelog...
+	SET (${PROJECT_NAME}_SVN_REVISION ${${PROJECT_NAME}_WC_REVISION} CACHE STRING "The detected revision of the source repository" FORCE)
+else(Subversion_FOUND)
+	SET (${PROJECT_NAME}_SVN_REVISION "SVN-NOTFOUND" CACHE STRING "The detected revision of the source repository" FORCE)
+endif(Subversion_FOUND)
+
+endmacro (WkSvn)

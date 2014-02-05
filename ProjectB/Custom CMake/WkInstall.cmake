@@ -27,33 +27,37 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-#Mandatory comands to use wkcmake
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)	
-INCLUDE ( "Custom CMake/WkCMake.cmake" )
-WkCMakeDir( "Custom CMake" )
+#debug
+message ( STATUS "== Loading WkInstall.cmake ..." )
 
-#Configuration of custom directories
-WkSrcDir ( "Custom Src" )
-WkIncludeDir ( "Custom Include" )
-WkBinDir ( "Custom Bin" )
-WkLibDir ( "Custom Lib" )
-WkDataDir ( "Custom Data")
-WkTestDir ( "Custom Test" )
-WkDocDir ( "Custom Doc" )
-WkTestDataDir ( "Custom Test Data Src")
-WkTestDataBuildDir ( "Custom Test Data Build")
+if ( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6 )
+	message ( FATAL_ERROR " CMAKE MINIMUM BACKWARD COMPATIBILITY REQUIRED : 2.6 !" )
+endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6 )
 
-#Project Declaration
-WkProject( ProjectB C )
 
-#Build rules
-WkDepends( ProjectC )
-WkBuild( LIBRARY SHARED )
+#
+# Defining installation rules based on well known hierarchy
+#
 
-WkDoc( )
-#WkSvn()
+MACRO (WkInstall)
 
-#Testing
-WkTestBuild( maintestB )
-WkTestData( maintestB data.txt )
-WkTestRun( ProjectB maintestB )
+	INSTALL (
+		DIRECTORY ${CMAKE_BINARY_DIR}/${WKCMAKE_INCLUDE_DIR}/${PROJECT_NAME} DESTINATION include 
+		PATTERN ".svn" EXCLUDE)
+
+	INSTALL	(
+		TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib/${PROJECT_NAME}
+		ARCHIVE DESTINATION lib/${PROJECT_NAME}
+		)
+
+	INSTALL (
+		EXPORT ${PROJECT_NAME} DESTINATION WkCMake
+		FILE ${PROJECT_NAME}Export.cmake
+		)
+	
+	INSTALL (
+		FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake DESTINATION WkCMake
+		)
+ENDMACRO(WkInstall)
