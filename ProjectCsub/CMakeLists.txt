@@ -45,7 +45,7 @@ WkProject( ProjectCsub C )
 WkBuild( LIBRARY SHARED )
 
 WkDoc( )
-WkSvn( )
+#WkSvn( )
 
 #Testing
 WkTestBuild( maintestCsub )
