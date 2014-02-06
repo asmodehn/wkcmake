@@ -8,11 +8,6 @@ UNAME=`uname`
 
 cd $SRC_DIR
 
-if [ -z "${UNAME##*CYGWIN*}" ]; then
-	echo CYGWIN platform detected. Changing path to windows path !;
-	SRC_DIR=`cygpath -w $SRC_DIR`;
-fi
-
 set +x
 
 mkdir -p $BUILD_DIR && \
