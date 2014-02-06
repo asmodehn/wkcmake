@@ -5,7 +5,7 @@ compiler:
 install: 
 branches:
  only:
-  - master
+  - test
 notifications:
  recipients:
   - asmodehn@gmail.com
