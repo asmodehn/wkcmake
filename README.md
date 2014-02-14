@@ -1,4 +1,4 @@
-WkCmake tests
+WkCmake Tests [![Build Status](https://travis-ci.org/asmodehn/wkcmake.png?branch=test)](https://travis-ci.org/asmodehn/wkcmake)
 =============
 
 WkCMake is aimed at simplifying CMake builds by making some assumptions :
