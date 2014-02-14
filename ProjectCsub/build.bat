@@ -1,4 +1,4 @@
-set BUILD_DIR="..\ProjectCsub_build"
+set BUILD_DIR="build"
 set SRC_DIR="%~dp0"
 set BUILD_TYPE=Release
 set ENABLE_TESTS=ON
