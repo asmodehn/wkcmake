@@ -1,7 +1,7 @@
 #!/bin/sh
 
-BUILD_DIR="../ProjectB_build"
-SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BUILD_DIR="build"
+SRC_DIR="$( cd "$( dirname "${0}" )" && pwd )"
 BUILD_TYPE=Release
 ENABLE_TESTS=ON
 UNAME=`uname`
@@ -14,7 +14,7 @@ mkdir -p $BUILD_DIR && \
 cd $BUILD_DIR && \
 echo "Running in $SRC_DIR :" && \
 cmake -DProjectB_BUILD_TYPE=$BUILD_TYPE -DProjectB_ENABLE_TESTS=$ENABLE_TESTS $SRC_DIR && \
-make && \ 
+make && \
 ctest
 
  
