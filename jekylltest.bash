@@ -1,8 +1,8 @@
 #!/bin/bash
-set -x
+#set -x
 TMP_FILE=/tmp/jekyll_test_run
 touch $TMP_FILE
-( bundle exec jekyll server & echo $! >&3 ) 3>JEKYLL_PID | tee $TMP_FILE &
+( bundle exec jekyll server & echo $! >&3 ) 3>/tmp/JEKYLL_PID | tee $TMP_FILE &
 #runnin jekyll server for test 
 #give time to ruby
 sleep 1
@@ -25,4 +25,5 @@ fi
 
 #cleanup
 rm $TMP_FILE
-kill $(<JEKYLL_PID) 
+kill $(</tmp/JEKYLL_PID) 
+rm /tmp/JEKYLL_PID
