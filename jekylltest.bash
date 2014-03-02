@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -x
+set -x
 TMP_FILE=/tmp/jekyll_test_run
 touch $TMP_FILE
 ( bundle exec jekyll server & echo $! >&3 ) 3>/tmp/JEKYLL_PID | tee $TMP_FILE &
