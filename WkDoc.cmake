@@ -43,7 +43,9 @@ macro( WKDoc )
 FIND_PACKAGE(Doxygen)
 
 IF (DOXYGEN_FOUND)
-
+  option (${PROJECT_NAME}_CODE_DOC "Enable Code Documentation" OFF)
+  IF ( ${PROJECT_NAME}_CODE_DOC )
+		
   WkDocDir("doc")
 
   # click+jump in Emacs and Visual Studio (for doxy.config) (jw)
@@ -81,8 +83,10 @@ endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${WKCMAKE_DOC_DIR}/Doxyfile" )
   ADD_CUSTOM_TARGET(${PROJECT_NAME}_doc ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/${WKCMAKE_DOC_DIR}/Doxyfile" )
   
   #forcing doc generation whenever main target is being built
-  #add_dependencies( ${PROJECT_NAME}  ${PROJECT_NAME}_doc )
-  
+  add_dependencies( ${PROJECT_NAME}  ${PROJECT_NAME}_doc )
+
+  ENDIF ( ${PROJECT_NAME}_CODE_DOC ) 
+ 
 ENDIF(DOXYGEN_FOUND)
 
 endmacro( WKDoc )
