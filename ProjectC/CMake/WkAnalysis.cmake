@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2009, Asmodehn's Corp.
+# Copyright (c) 2014, Asmodehn's Corp.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without 
@@ -27,27 +27,31 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-#Using WkCMake, mandatory calls
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR )
-INCLUDE ( CMake/WkCMake.cmake )
-WkCMakeDir ( CMake )
+#debug
+message ( STATUS "== Loading WkAnalysis.cmake ... ")
 
-#declaring the project
-WkProject( ProjectC C )
+if ( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.8 )
+	message ( FATAL_ERROR " CMAKE MINIMUM BACKWARD COMPATIBILITY REQUIRED : 2.8 !" )
+endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.8 )
 
-#build rules for the project
-WkBuild( LIBRARY SHARED )
-WkFormat( )
-WkAnalysis( )
-WkDoc( )
-#WkSvn( )
-#TODO : WkGit()
+macro( WKAnalysis )
+	#code analysis by target introspection -> needs to be done after target definition ( as here )
+	FIND_PACKAGE(WKCMAKE_Cppcheck)
+	IF ( WKCMAKE_Cppcheck_FOUND)
+		option ( ${PROJECT_NAME}_CODE_ANALYSIS "Enable Code Analysis" OFF)
+		IF ( ${PROJECT_NAME}_CODE_ANALYSIS )
+			Add_WKCMAKE_Cppcheck_target(${PROJECT_NAME}_cppcheck ${PROJECT_NAME} "${PROJECT_NAME}-cppcheck.xml")
+		ENDIF ( ${PROJECT_NAME}_CODE_ANALYSIS )
+	ENDIF ( WKCMAKE_Cppcheck_FOUND)
 
-#Testing
-WkTestBuild( maintestC )
-WkTestRun( ProjectC maintestC )
 
-WkInstall ( )
+	#setting up dependencies between formatting and code analysis target
+	if ( WKCMAKE_Cppcheck_FOUND AND ${PROJECT_NAME}_CODE_ANALYSIS )
+		add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_cppcheck)
+	    	if( WKCMAKE_AStyle_FOUND AND ${PROJECT_NAME}_CODE_FORMAT )
+    			add_dependencies(${PROJECT_NAME}_cppcheck ${PROJECT_NAME}_format)	    
+        	endif( WKCMAKE_AStyle_FOUND AND ${PROJECT_NAME}_CODE_FORMAT )
+	endif( WKCMAKE_Cppcheck_FOUND AND ${PROJECT_NAME}_CODE_ANALYSIS )
 
-WkPack ( )
 
+endmacro( WKAnalysis )

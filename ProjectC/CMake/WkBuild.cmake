@@ -271,44 +271,17 @@ CMAKE_POLICY(VERSION 2.6)
 	#VS workaround to display headers even if strictly not needed when building
 	FILE(GLOB_RECURSE HEADERS RELATIVE "${PROJECT_SOURCE_DIR}" ${${PROJECT_NAME}_INCLUDE_DIR}/*.h ${${PROJECT_NAME}_INCLUDE_DIR}/*.hh ${${PROJECT_NAME}_INCLUDE_DIR}/*.hpp ${${PROJECT_NAME}_SRC_DIR}/*.h ${${PROJECT_NAME}_SRC_DIR}/*.hh ${${PROJECT_NAME}_SRC_DIR}/*.hpp)
 	FILE(GLOB_RECURSE SOURCES RELATIVE "${PROJECT_SOURCE_DIR}" ${${PROJECT_NAME}_SRC_DIR}/*.c ${${PROJECT_NAME}_SRC_DIR}/*.cpp ${${PROJECT_NAME}_SRC_DIR}/*.cc)
-	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR} and ${${PROJECT_NAME}_SRC_DIR} : ${HEADERS}" )
-	message ( STATUS "== Sources detected in ${${PROJECT_NAME}_SRC_DIR} : ${SOURCES}" )
+	set(${PROJECT_NAME}_HEADERS ${HEADERS} CACHE STRING "Headers for ${PROJECT_NAME}")
+	set(${PROJECT_NAME}_SOURCES ${SOURCES} CACHE STRING "Sources for ${PROJECT_NAME}")
+
+	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR} and ${${PROJECT_NAME}_SRC_DIR} : ${${PROJECT_NAME}_HEADERS}" )
+	message ( STATUS "== Sources detected in ${${PROJECT_NAME}_SRC_DIR} : ${${PROJECT_NAME}_SOURCES}" )
 
 	if ( NOT CMAKE_MODULE_PATH )
 		set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/${${PROJECT_NAME}_DIR}/Modules/")
 	endif ( NOT CMAKE_MODULE_PATH )
 
-	#TODO : automatic detection on windows ( preinstalled with wkcmake... )
-	FIND_PACKAGE(WKCMAKE_AStyle)
-	IF ( WKCMAKE_AStyle_FOUND )
-		option (${PROJECT_NAME}_CODE_FORMAT "Enable Code Formatting" OFF)
-		IF ( ${PROJECT_NAME}_CODE_FORMAT )
-			set(${PROJECT_NAME}_CODE_FORMAT_STYLE "ansi" CACHE STRING "Format Style for AStyle")
-			#converting to system path ( needed because command line call later )
-			set(HEADERS_NATIVE "")
-			foreach (f ${HEADERS} )
-				FILE(TO_NATIVE_PATH ${f} f_nat)
-				SET(HEADERS_NATIVE ${HEADERS_NATIVE} ${f_nat})
-			endforeach(f)
-			SET(SOURCES_NATIVE "")
-			foreach (f ${SOURCES} )
-				FILE(TO_NATIVE_PATH ${f} f_nat)
-				SET(SOURCES_NATIVE ${SOURCES_NATIVE} ${f_nat})
-			endforeach(f)
-			WkWhitespaceSplit( HEADERS_NATIVE HEADERS_PARAM_NATIVE )
-			WkWhitespaceSplit( SOURCES_NATIVE SOURCES_PARAM_NATIVE )
-			#message ( "Sources :  ${HEADERS_PARAM_NATIVE} ${SOURCES_PARAM_NATIVE}" )
-			set ( cmdline " ${WKCMAKE_AStyle_EXECUTABLE} --style=${${PROJECT_NAME}_CODE_FORMAT_STYLE} ${HEADERS_PARAM_NATIVE} ${SOURCES_PARAM_NATIVE}" )
-			#message ( "CMD : ${cmdline} " )
-			#message ( "WORKING_DIR : ${PROJECT_SOURCE_DIR} " )
-			IF ( WIN32 )
-				ADD_CUSTOM_TARGET(${PROJECT_NAME}_format ALL cmd /c ${cmdline} WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}" VERBATIM )
-			ELSE ( WIN32 )
-				ADD_CUSTOM_TARGET(${PROJECT_NAME}_format ALL sh -c ${cmdline} WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}" VERBATIM )
-			ENDIF ( WIN32 )
-		ENDIF ( ${PROJECT_NAME}_CODE_FORMAT )
-	ENDIF ( WKCMAKE_AStyle_FOUND )
-
+	
 
 	#Including configured headers (
 	#	-binary_dir/CMakeFiles for the configured header, 
@@ -319,8 +292,7 @@ CMAKE_POLICY(VERSION 2.6)
 	include_directories("${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_SRC_DIR}")
 
 	#TODO : find a simpler way than this complex merge...
-	MERGE("${HEADERS}" "${SOURCES}" SOURCES)
-	#MESSAGE ( STATUS "== ${PROJECT_NAME} Sources : ${SOURCES}" )
+	MERGE("${${PROJECT_NAME}_HEADERS}" "${${PROJECT_NAME}_SOURCES}" SOURCES)
 	
 	AddPlatformCheckSrc( SOURCES )
 
@@ -389,27 +361,6 @@ CMAKE_POLICY(VERSION 2.6)
         endif()
   	endif()
   	
-	#code analysis by target introspection -> needs to be done after target definition ( as here )
-	FIND_PACKAGE(WKCMAKE_Cppcheck)
-	IF ( WKCMAKE_Cppcheck_FOUND)
-		option ( ${PROJECT_NAME}_CODE_ANALYSIS "Enable Code Analysis" OFF)
-		IF ( ${PROJECT_NAME}_CODE_ANALYSIS )
-			Add_WKCMAKE_Cppcheck_target(${PROJECT_NAME}_cppcheck ${PROJECT_NAME} "${PROJECT_NAME}-cppcheck.xml")
-		ENDIF ( ${PROJECT_NAME}_CODE_ANALYSIS )
-	ENDIF ( WKCMAKE_Cppcheck_FOUND)
-
-    #setting up dependencies between formatting and code analysis target
-	if ( WKCMAKE_Cppcheck_FOUND AND ${PROJECT_NAME}_CODE_ANALYSIS )
-		add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_cppcheck)
-    	if( WKCMAKE_AStyle_FOUND AND ${PROJECT_NAME}_CODE_FORMAT )
-    		add_dependencies(${PROJECT_NAME}_cppcheck ${PROJECT_NAME}_format)	    
-        endif( WKCMAKE_AStyle_FOUND AND ${PROJECT_NAME}_CODE_FORMAT )
-    else ( WKCMAKE_Cppcheck_FOUND AND ${PROJECT_NAME}_CODE_ANALYSIS )
-    	if( WKCMAKE_AStyle_FOUND AND ${PROJECT_NAME}_CODE_FORMAT )
-    		add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_format)	    
-        endif( WKCMAKE_AStyle_FOUND AND ${PROJECT_NAME}_CODE_FORMAT )
-    endif( WKCMAKE_Cppcheck_FOUND AND ${PROJECT_NAME}_CODE_ANALYSIS )
-
 	#
 	# Defining where to put what has been built
 	#
