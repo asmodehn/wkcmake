@@ -31,14 +31,6 @@ ELSE (WKCMAKE_AStyle_EXECUTABLE)
 		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=../.. -DCMAKE_BUILD_TYPE=Release
 		GIT_REPOSITORY https://github.com/asmodehn/wkcmake-astyle.git
 		GIT_TAG master
-		#URL https://github.com/asmodehn/wkcmake-astyle/archive/master.zip
-		#INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
-		LOG_DOWNLOAD 0
-		LOG_UPDATE 0
-		LOG_CONFIGURE 0
-		LOG_BUILD 0
-		LOG_TEST 0
-		LOG_INSTALL 0
 	)
   #Registering astyle executable where it is supposed to end up.
   SET (WKCMAKE_AStyle_FOUND "YES")

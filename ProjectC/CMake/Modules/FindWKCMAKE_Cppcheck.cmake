@@ -9,9 +9,12 @@ include(ParseArguments)
 
 MESSAGE(STATUS "Looking for cppcheck...")
 
+#Downloading in Source directory by default ( part of tools used for this build, not part of this build )
+SET(CppCheck_path "${WKCMAKE_DIR}/CppCheck")
+
 FIND_PROGRAM(WKCMAKE_Cppcheck_EXECUTABLE
   NAMES cppcheck
-  PATHS "[HKEY_LOCAL_MACHINE\\Software\\Cppcheck;InstallationPath]"
+  PATHS "${CppCheck_path}/bin" "[HKEY_LOCAL_MACHINE\\Software\\Cppcheck;InstallationPath]"
   DOC "Cppcheck Source Code Analysis tool (http://cppcheck.sourceforge.net)"
 )
 
@@ -20,7 +23,24 @@ IF (WKCMAKE_Cppcheck_EXECUTABLE)
   MESSAGE(STATUS "Looking for cppcheck... - found ${WKCMAKE_Cppcheck_EXECUTABLE}")
 ELSE (WKCMAKE_Cppcheck_EXECUTABLE)
   IF (WKCMAKE_Cppcheck_FIND_REQUIRED)
-    MESSAGE(FATAL_ERROR "Looking for cppcheck... - NOT found")
+
+  MESSAGE(STATUS "Cppcheck not found on system but required. Download into WkCMake scheduled for build.")
+  # If not found, download with ExternalPRoject_Add and install as wkcmake only install ( so that next configure will not download it. )
+	ExternalProject_Add( CppCheck
+		PREFIX ${CppCheck_path}
+		# it seems the install_dir option doesnt work as expected...
+		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=../.. -DCMAKE_BUILD_TYPE=Release
+		GIT_REPOSITORY https://github.com/asmodehn/wkcmake-cppcheck.git
+		GIT_TAG master
+		CONFIGURE_COMMAND echo Configure Not Needed
+		BUILD_COMMAND make
+		BUILD_IN_SOURCE 1
+		
+	)
+  #Registering astyle executable where it is supposed to end up.
+  SET (WKCMAKE_Cppcheck_FOUND "YES")
+  set (WKCMAKE_Cppcheck_EXECUTABLE "${CppCheck_path}/bin/cppcheck")
+
   ELSE (WKCMAKE_Cppcheck_FIND_REQUIRED)
     MESSAGE(STATUS "Looking for cppcheck... - NOT found")
   ENDIF (WKCMAKE_Cppcheck_FIND_REQUIRED)
@@ -84,3 +104,4 @@ MACRO (Add_WKCMAKE_Cppcheck_target cppcheck_new_target original_target filename_
 	)
 	ADD_CUSTOM_TARGET(${cppcheck_new_target} DEPENDS ${PROJECT_BINARY_DIR}/${filename_results})
 ENDMACRO (Add_WKCMAKE_Cppcheck_target)
+

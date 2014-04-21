@@ -36,7 +36,7 @@ endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.8 )
 
 macro( WKAnalysis )
 	#code analysis by target introspection -> needs to be done after target definition ( as here )
-	FIND_PACKAGE(WKCMAKE_Cppcheck)
+	FIND_PACKAGE(WKCMAKE_Cppcheck REQUIRED)
 	IF ( WKCMAKE_Cppcheck_FOUND)
 		option ( ${PROJECT_NAME}_CODE_ANALYSIS "Enable Code Analysis" OFF)
 		IF ( ${PROJECT_NAME}_CODE_ANALYSIS )
