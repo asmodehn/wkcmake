@@ -310,7 +310,7 @@ CMAKE_POLICY(VERSION 2.6)
 		set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/${${PROJECT_NAME}_DIR}/Modules/")
 	endif ( NOT CMAKE_MODULE_PATH )
 
-	#TODO : automatic detectino on windows ( preinstalled with wkcmake... )
+	#TODO : automatic detection on windows ( preinstalled with wkcmake... )
 	FIND_PACKAGE(WKCMAKE_AStyle)
 	IF ( WKCMAKE_AStyle_FOUND )
 		option (${PROJECT_NAME}_CODE_FORMAT "Enable Code Formatting" OFF)
