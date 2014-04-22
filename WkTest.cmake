@@ -75,11 +75,26 @@ MACRO(WkTestBuild test_name)
     #Defining default folders for tests
     # Note that if these have been already defined with the same macros, the calls here wont have any effect ( wont changed cached value )
     # Default: "test" w root at ${PROJECT_SOURCE_DIR} 
-    WkTestDir("test")
-    # Default: "data" w root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}    
-    WkTestDataDir("data")
+	if ( NOT DEFINED Project_TEST_DIR )
+		WkTestDir("test")
+	else()
+		WkTestDir("${Project_TEST_DIR}")
+		unset(Project_TEST_DIR CACHE)
+	endif()
+    # Default: "data" w root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}
+	if ( NOT DEFINED Project_TEST_DATA_DIR )
+		WkTestDataDir("data")
+	else()
+		WkTestDataDir("${Project_TEST_DATA_DIR}")
+		unset(Project_TEST_DATA_DIR CACHE)
+	endif()
     # Default: "${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}" w root at ${PROJECT_BINARY_DIR}
-    WkTestDataBuildDir("${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}" )
+	if ( NOT DEFINED Project_TEST_DATA_BUILD_DIR )
+		WkTestDataBuildDir("${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}")
+	else()
+		WkTestDataBuildDir("${Project_TEST_DATA_BUILD_DIR}")
+		unset(Project_TEST_DATA_BUILD_DIR CACHE)
+	endif()
     
 	option(${PROJECT_NAME}_ENABLE_TESTS "Wether or not you want the project to include the tests and enable automatic testing for ${PROJECT_NAME}" OFF)
 
