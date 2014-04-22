@@ -6,8 +6,6 @@ set SRC_DIR="%CD%"
 set BUILD_TYPE=Release
 set ENABLE_TESTS=ON
 
-@echo on
-
 set ORI_DIR=%CD%
 
 REM this can fail if directory already exist
@@ -19,23 +17,25 @@ cmake -DProjectB_BUILD_TYPE=%BUILD_TYPE% -DProjectB_ENABLE_TESTS=%ENABLE_TESTS% 
 
 @echo off
 
-echo|set /p=Detecting VS 10.0 install in 
-setlocal ENABLEEXTENSIONS
-REM set KEY_NAME=HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0
-set KEY_NAME=HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\10.0
-set VALUE_NAME=InstallDir
-FOR /F "tokens=2*" %%A IN ('REG.exe query "%KEY_NAME%" /v "%VALUE_NAME%"') DO (set pInstallDir=%%B)
-echo %pInstallDir%
+@if "%VS120COMNTOOLS%"=="" (
+	goto error_no_VS120COMNTOOLSDIR
+	) else (
+	@echo Initializing VS environment
+	call "%VS120COMNTOOLS%\vsvars32.bat"
+	)
 
-@echo on
-
-echo Initializing VS environment
-call "%pInstallDir%\..\..\VC\vcvarsall.bat"
-
-echo Building project
-devenv ProjectB.sln /Build %BUILD_TYPE%
+@echo Building project
+msbuild ProjectB.sln /p:Configuration=%BUILD_TYPE%
 
 ctest
 
 cd %ORI_DIR%
 endlocal
+goto end
+
+
+:error_no_VS120COMNTOOLSDIR
+@echo ERROR: Cannot determine the location of the VS 12.0 Common Tools folder.
+@goto end
+
+:end
