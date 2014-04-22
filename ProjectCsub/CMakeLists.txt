@@ -32,6 +32,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR )
 INCLUDE ( subCMake/WkCMake.cmake )
 WkCMakeDir ( subCMake )
 
+#These should be defined after WkProject.
+#But this here should still work.
 WkIncludeDir (subinclude)
 WkSrcDir ( subsrc )
 WkTestDir ( subtest )

@@ -43,8 +43,12 @@ macro( WKDoc )
 FIND_PACKAGE(Doxygen)
 
 IF (DOXYGEN_FOUND)
-
-  WkDocDir("doc")
+	if ( NOT DEFINED Project_DOC_DIR )
+		WkDocDir("doc")
+	else()
+		WkDocDir("${Project_DOC_DIR}")
+		unset(Project_DOC_DIR CACHE)
+	endif()
 
   # click+jump in Emacs and Visual Studio (for doxy.config) (jw)
   IF    (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv)")
