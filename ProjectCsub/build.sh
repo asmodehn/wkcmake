@@ -1,7 +1,7 @@
 #!/bin/sh
 
 BUILD_DIR="build"
-SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SRC_DIR="$( cd "$( dirname "${0}" )" && pwd )"
 BUILD_TYPE=Release
 ENABLE_TESTS=ON
 UNAME=`uname`
