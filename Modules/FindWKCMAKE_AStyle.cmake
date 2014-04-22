@@ -7,7 +7,7 @@
 MESSAGE(STATUS "Looking for astyle...")
 
 FIND_PROGRAM(WKCMAKE_AStyle_EXECUTABLE
-  NAMES astyle AStyle.exe
+  NAMES astyle
   PATHS "${WKCMAKE_DIR}/Utils/astyle/bin"
 #  PATHS "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\doxygen_is1;Inno Setup: App Path]/bin"
 #  /Applications/Doxygen.app/Contents/Resources
