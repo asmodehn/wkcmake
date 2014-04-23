@@ -155,8 +155,9 @@ MACRO(WkTestBuild test_name)
 			#We need to do that everytime to make sure we have the latest version
 			
 			if ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
-				ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${test_name}>"
-														COMMENT "Copying $<TARGET_FILE:${PROJECT_NAME}> to $<TARGET_FILE_DIR:${test_name}>" )
+				ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${test_name}>"
+														COMMENT "Copying $<TARGET_FILE:${PROJECT_NAME}> to $<TARGET_FILE_DIR:${test_name}>"
+														VERBATIM )
 			endif ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
 			
 			message ( STATUS "== Detected external dependencies for ${test_name} : ${${PROJECT_NAME}_DEPENDS}" )
@@ -187,7 +188,7 @@ MACRO (WkTestData test_name )
 		# warning : tests are run from the project root...
 		FILE(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}" ${test_data}_NATIVE_SRC_PATH)
 		FILE(TO_NATIVE_PATH "${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}" ${test_data}_NATIVE_BLD_PATH)
-		ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${${test_data}_NATIVE_SRC_PATH}" "${${test_data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${test_data}_NATIVE_SRC_PATH} to ${${test_data}_NATIVE_BLD_PATH}" )
+		ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${${test_data}_NATIVE_SRC_PATH}" "${${test_data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${test_data}_NATIVE_SRC_PATH} to ${${test_data}_NATIVE_BLD_PATH}" )
 		
 		#message ("test data src: ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}")
 		#message ("test data dest: ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}")
