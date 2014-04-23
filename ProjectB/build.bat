@@ -13,7 +13,7 @@ mkdir %BUILD_DIR%
 cd %BUILD_DIR%
 
 echo "Running in %CD% :"
-cmake -DProjectB_BUILD_TYPE=%BUILD_TYPE% -DProjectB_ENABLE_TESTS=%ENABLE_TESTS% %SRC_DIR%
+cmake -DProjectB_BUILD_TYPE=%BUILD_TYPE% -DProjectB_ENABLE_TESTS=%ENABLE_TESTS% -DProjectC_DIR="..\ProjectC\build" %SRC_DIR%
 
 @echo off
 
