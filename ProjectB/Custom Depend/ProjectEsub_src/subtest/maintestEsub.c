@@ -28,12 +28,9 @@
  *
  */
 
-#include "ProjectCsub/header.h"
+#include "ProjectEsub/header.h"
 
-#include <stdio.h>
-
-int Csub_display()
+int main ( int argc, char* argv[] )
 {
-    WkDebug();
-    return 0;
+    return Esub_display("test Esub");
 }

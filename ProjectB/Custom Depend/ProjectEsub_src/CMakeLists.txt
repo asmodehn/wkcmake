@@ -27,21 +27,18 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-#Using WkCMake, mandatory calls
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR )
-INCLUDE ( subCMake/WkCMake.cmake )
-WkCMakeDir ( subCMake )
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR )
+#No need for wkcmake calls in subproject. Top level wkcmake matters only.
+
+#declaring the project
+WkProject( ProjectEsub C )
 
 #These should be defined after WkProject.
-#But this here should still work.
 WkIncludeDir (subinclude)
 WkSrcDir ( subsrc )
 WkTestDir ( subtest )
 WkDocDir (subdoc)
 WkDataDir (subdata)
-
-#declaring the project
-WkProject( ProjectCsub C )
 
 #build rules for the project
 WkBuild( LIBRARY SHARED )
@@ -50,8 +47,8 @@ WkDoc( )
 #WkSvn( )
 
 #Testing
-WkTestBuild( maintestCsub )
-WkTestRun( ProjectCsub maintestCsub )
+WkTestBuild( maintestEsub )
+WkTestRun( ProjectEsub maintestEsub )
 
 WkInstall ( )
 

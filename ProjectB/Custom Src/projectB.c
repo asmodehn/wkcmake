@@ -38,5 +38,7 @@ int B_display()
 
     printf("\nProject Dependency : \n");
     C_display();
+	Dsub_display();
+	Esub_display();
     return 0;
 }

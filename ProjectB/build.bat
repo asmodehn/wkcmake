@@ -1,4 +1,5 @@
 @echo off
+
 setlocal
 
 set BUILD_DIR="build"
@@ -8,11 +9,22 @@ set ENABLE_TESTS=ON
 
 set ORI_DIR=%CD%
 
+@echo Building binary depend ..\ProjectC
+cd "..\ProjectC" && call build.bat
+cd %ORI_DIR%
+
+@echo Building binary depend Custom Depend\ProjectDsub_bin
+cd "Custom Depend\ProjectDsub_bin" && call build.bat 
+cd %ORI_DIR%
+
+@echo Source depend will be built with the current project
+
 REM this can fail if directory already exist
 mkdir %BUILD_DIR%
 cd %BUILD_DIR%
 
 echo "Running in %CD% :"
+rem ProjectDsub_DIR will be found automatically by wkcmake as it is a subdirectory
 cmake -DProjectB_BUILD_TYPE=%BUILD_TYPE% -DProjectB_ENABLE_TESTS=%ENABLE_TESTS% -DProjectC_DIR="..\ProjectC\build" %SRC_DIR%
 
 @echo off
@@ -25,7 +37,7 @@ cmake -DProjectB_BUILD_TYPE=%BUILD_TYPE% -DProjectB_ENABLE_TESTS=%ENABLE_TESTS% 
 	)
 
 @echo Building project
-msbuild ProjectB.sln /p:Configuration=%BUILD_TYPE%
+msbuild ProjectB.sln /p:Configuration=%BUILD_TYPE% /verbosity:minimal
 
 ctest
 

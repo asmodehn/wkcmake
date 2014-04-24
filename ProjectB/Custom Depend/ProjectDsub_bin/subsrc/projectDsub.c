@@ -1,6 +1,3 @@
-#ifndef PROJECTB_H
-#define PROJECTB_H
-
 /**
  *  Copyright (c) 2009, Asmodehn's Corp.
  *  All rights reserved.
@@ -31,25 +28,12 @@
  *
  */
 
-/* This should always be the first of your include statements */
-#include "WkPlatform_ProjectB.h"
-
-/*We are depending on projectC, projectDsub and projectEsub */
-#include "ProjectC/header.h"
 #include "ProjectDsub/header.h"
-#include "ProjectEsub/header.h"
 
-/* Set up for C function definitions, even when using C++ */
-#ifdef __cplusplus
-extern "C"
+#include <stdio.h>
+
+int Dsub_display()
 {
-#endif
-
-    WK_ProjectB_API int B_display();
-
-    /* Ends C function definitions when using C++ */
-#ifdef __cplusplus
+    WkDebug();
+    return 0;
 }
-#endif
-
-#endif /* PROJECTB_H */

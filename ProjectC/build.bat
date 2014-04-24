@@ -25,7 +25,7 @@ cmake -DProjectC_BUILD_TYPE=%BUILD_TYPE% -DProjectC_ENABLE_TESTS=%ENABLE_TESTS% 
 	)
 
 @echo Building project
-msbuild ProjectC.sln /p:Configuration=%BUILD_TYPE%
+msbuild ProjectC.sln /p:Configuration=%BUILD_TYPE% /verbosity:minimal
 
 ctest
 
@@ -39,3 +39,4 @@ goto end
 @goto end
 
 :end
+echo FINISH

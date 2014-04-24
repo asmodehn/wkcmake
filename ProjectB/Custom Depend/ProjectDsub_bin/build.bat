@@ -13,7 +13,7 @@ mkdir %BUILD_DIR%
 cd %BUILD_DIR%
 
 echo "Running in %CD% :"
-cmake -DProjectCsub_BUILD_TYPE=%BUILD_TYPE% -DProjectCsub_ENABLE_TESTS=%ENABLE_TESTS% %SRC_DIR%
+cmake -DProjectDsub_BUILD_TYPE=%BUILD_TYPE% -DProjectDsub_ENABLE_TESTS=%ENABLE_TESTS% %SRC_DIR%
 
 @echo off
 
@@ -25,7 +25,7 @@ cmake -DProjectCsub_BUILD_TYPE=%BUILD_TYPE% -DProjectCsub_ENABLE_TESTS=%ENABLE_T
 	)
 
 @echo Building project
-msbuild ProjectCsub.sln /p:Configuration=%BUILD_TYPE%
+msbuild ProjectDsub.sln /p:Configuration=%BUILD_TYPE% /verbosity:minimal
 
 ctest
 

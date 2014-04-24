@@ -27,44 +27,32 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-#Mandatory commands to use wkcmake
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-INCLUDE ( "Custom CMake/WkCMake.cmake" )
-WkCMakeDir( "Custom CMake" )
+#Using WkCMake, mandatory calls
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR )
+INCLUDE ( subCMake/WkCMake.cmake )
+WkCMakeDir ( subCMake )
 
-#Project Declaration
-WkProject( ProjectB C )
+#declaring the project
+WkProject( ProjectDsub C )
 
-#Configuration of custom directories
-WkSrcDir ( "Custom Src" )
-WkIncludeDir ( "Custom Include" )
-WkBinDir ( "Custom Bin" )
-WkLibDir ( "Custom Lib" )
-WkDataDir ( "Custom Data")
-WkTestDir ( "Custom Test" )
-WkDocDir ( "Custom Doc" )
-WkTestDataDir ( "Custom Test Data Src")
-WkTestDataBuildDir ( "Custom Test Data Build")
+#These should be defined after WkProject.
+WkIncludeDir (subinclude)
+WkSrcDir ( subsrc )
+WkTestDir ( subtest )
+WkDocDir (subdoc)
+WkDataDir (subdata)
 
-#Build rules
-#This depends is external. That means it should be built previously by another method.
-#Also that project will NOT be included as part of the final solution.
-WkDepends( "ProjectC" )
-
-#These two depends are internal (contained inside a subdirectory).
-# One can be binary depends ( same use case as an external depends, that is always a binary depends )
-WkDepends("Custom Depend/ProjectDsub_bin/build")
-
-# One can be source depends. That means it will be build if necessary by the current project.
-#Therefore that project will be included as part of the final solution.
-WkDepends("Custom Depend/ProjectEsub_src")
-
+#build rules for the project
 WkBuild( LIBRARY SHARED )
 
 WkDoc( )
-#WkSvn()
+#WkSvn( )
 
 #Testing
-WkTestBuild( maintestB )
-WkTestData( maintestB data.txt )
-WkTestRun( ProjectB maintestB )
+WkTestBuild( maintestDsub )
+WkTestRun( ProjectDsub maintestDsub )
+
+WkInstall ( )
+
+WkPack ( )
+
