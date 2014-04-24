@@ -46,24 +46,36 @@ endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6.3 )
 # Defining where Test should be found on WkTestBuild call.
 #
 macro(WkTestDir dir)
- 	set ( ${PROJECT_NAME}_TEST_DIR ${dir} CACHE PATH "Test directory for ${PROJECT_NAME}" )    
-  	mark_as_advanced ( ${PROJECT_NAME}_TEST_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkTestDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_TEST_DIR ${dir} CACHE PATH "Test directory for ${PROJECT_NAME}" )    
+		mark_as_advanced ( ${PROJECT_NAME}_TEST_DIR )
+	endif()
 endmacro(WkTestDir dir)
 
 #
 # Defining where data used by tests should be found vs the source.
 #
 macro(WkTestDataDir dir)
-	set ( ${PROJECT_NAME}_TEST_DATA_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} source tests with root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}" )
-	mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkTestDataDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_TEST_DATA_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} source tests with root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}" )
+		mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_DIR )
+	endif()
 endmacro(WkTestDataDir dir)
 
 #
 # Defining where data used by tests should be found when using the build exe.
 #
 macro(WkTestDataBuildDir dir)
-	set ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} build tests products with root at ${PROJECT_BINARY_DIR}" )
-	mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkTestDataBuildDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} build tests products with root at ${PROJECT_BINARY_DIR}" )
+		mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR )
+	endif()
 endmacro(WkTestDataBuildDir dir)
 
 #
@@ -75,27 +87,14 @@ MACRO(WkTestBuild test_name)
     #Defining default folders for tests
     # Note that if these have been already defined with the same macros, the calls here wont have any effect ( wont changed cached value )
     # Default: "test" w root at ${PROJECT_SOURCE_DIR} 
-	if ( NOT DEFINED Project_TEST_DIR )
-		WkTestDir("test")
-	else()
-		WkTestDir("${Project_TEST_DIR}")
-		unset(Project_TEST_DIR CACHE)
-	endif()
-    # Default: "data" w root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}
-	if ( NOT DEFINED Project_TEST_DATA_DIR )
-		WkTestDataDir("data")
-	else()
-		WkTestDataDir("${Project_TEST_DATA_DIR}")
-		unset(Project_TEST_DATA_DIR CACHE)
-	endif()
-    # Default: "${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}" w root at ${PROJECT_BINARY_DIR}
-	if ( NOT DEFINED Project_TEST_DATA_BUILD_DIR )
-		WkTestDataBuildDir("${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}")
-	else()
-		WkTestDataBuildDir("${Project_TEST_DATA_BUILD_DIR}")
-		unset(Project_TEST_DATA_BUILD_DIR CACHE)
-	endif()
-    
+	WkTestDir("test")
+	
+	# Default: "data" w root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}
+	WkTestDataDir("data")
+	
+	# Default: "${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}" w root at ${PROJECT_BINARY_DIR}
+	WkTestDataBuildDir("${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}")
+	
 	option(${PROJECT_NAME}_ENABLE_TESTS "Wether or not you want the project to include the tests and enable automatic testing for ${PROJECT_NAME}" OFF)
 
 	IF(${PROJECT_NAME}_ENABLE_TESTS)
@@ -160,13 +159,13 @@ MACRO(WkTestBuild test_name)
 														VERBATIM )
 			endif ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
 			
-			message ( STATUS "== Detected external dependencies for ${test_name} : ${${PROJECT_NAME}_DEPENDS}" )
+			message ( STATUS "== Detected external dependencies for ${test_name} : ${${PROJECT_NAME}_BINDEPENDS}" )
 			#if win32, moving all dependencies' run libraries
 			if ( WIN32 )
 				#needed for each run library dependency as well
-				foreach ( looparg ${${PROJECT_NAME}_DEPENDS} )
+				foreach ( looparg ${${PROJECT_NAME}_BINDEPENDS} )
 					WkCopyDepends(${looparg} ${test_name} )
-				endforeach ( looparg ${${PROJECT_NAME}_DEPENDS} )
+				endforeach ( looparg ${${PROJECT_NAME}_BINDEPENDS} )
 			endif ( WIN32 )
 			
 		ENDIF (testsource)
