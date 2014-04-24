@@ -6,15 +6,15 @@ BUILD_TYPE=Release
 ENABLE_TESTS=ON
 UNAME=`uname`
 
-cd $SRC_DIR
+cd "$SRC_DIR"
 
 set +x
 
-mkdir -p $BUILD_DIR && \
-cd $BUILD_DIR && \
+mkdir -p "$BUILD_DIR" && \
+cd "$BUILD_DIR" && \
 echo "Running in $SRC_DIR :" && \
-cmake -DProjectDsub_BUILD_TYPE=$BUILD_TYPE -DProjectDsub_ENABLE_TESTS=$ENABLE_TESTS $SRC_DIR && \
-make && \ 
+cmake -DProjectDsub_BUILD_TYPE=$BUILD_TYPE -DProjectDsub_ENABLE_TESTS=$ENABLE_TESTS "$SRC_DIR" && \
+make && \
 ctest
 
  

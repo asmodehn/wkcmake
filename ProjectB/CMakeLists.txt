@@ -49,15 +49,15 @@ WkTestDataBuildDir ( "Custom Test Data Build")
 #Build rules
 #This depends is external. That means it should be built previously by another method.
 #Also that project will NOT be included as part of the final solution.
-WkDepends( "ProjectC" )
+WkDepends( "ProjectC" REQUIRED)
 
 #These two depends are internal (contained inside a subdirectory).
 # One can be binary depends ( same use case as an external depends, that is always a binary depends )
-WkDepends("Custom Depend/ProjectDsub_bin/build")
+WkDepends("Custom Depend/ProjectDsub_bin/build" REQUIRED)
 
 # One can be source depends. That means it will be build if necessary by the current project.
 #Therefore that project will be included as part of the final solution.
-WkDepends("Custom Depend/ProjectEsub_src")
+WkDepends("Custom Depend/ProjectEsub_src" REQUIRED)
 
 WkBuild( LIBRARY SHARED )
 
