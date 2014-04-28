@@ -39,4 +39,3 @@ goto end
 @goto end
 
 :end
-echo FINISH
