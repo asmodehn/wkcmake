@@ -43,7 +43,7 @@ WkBuild( LIBRARY SHARED)
 
 # Generate Documentation Target
 WkDoc( )
-WkSvn()
+#WkSvn()
 
 #Testing
 WkTestBuild( maintest )
