@@ -66,8 +66,9 @@ macro (WkDepends package_name)
 			
 		ELSE()
 			#binary dependency ( by wkcmake )
-			#TODO : support basic cmake dependency (*Export.txt files ?)
-			file(GLOB files "${package_name}/[!CPack]*Config.cmake")
+			#TODO : support basic cmake dependency (*Export.txt files) ?
+			file(GLOB files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${package_name}/*Config.cmake")
+			list(REMOVE_ITEM files "${package_name}/CPackSourceConfig.cmake" "${package_name}/CPackConfig.cmake")
 			#message (STATUS "${files} FOUND !")
 			foreach(file ${files})
 				#get dependency name
@@ -135,7 +136,11 @@ macro (WkBinDepends package_name)
 
 			message ( STATUS "== Binary Dependency ${package_name} : FOUND ! " )
 
-			set ( ${PROJECT_NAME}_BINDEPENDS "${${PROJECT_NAME}_BINDEPENDS}" "${package_name}" ) 
+			if ( DEFINED ${PROJECT_NAME}_BINDEPENDS )
+				set ( ${PROJECT_NAME}_BINDEPENDS "${${PROJECT_NAME}_BINDEPENDS}" "${package_name}" )
+			else()
+				set ( ${PROJECT_NAME}_BINDEPENDS "${package_name}" )
+			endif()
 			
 		else ( ${package_var_name}_FOUND )	
 			message ( STATUS "== Binary Dependency ${package_name} : NOT FOUND ! " )
@@ -156,7 +161,11 @@ macro (WkSrcDepends dir_name)
 		add_subdirectory(${dir_name} ${CMAKE_CURRENT_BINARY_DIR}/${dir_name})
 		list(LENGTH ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize)
 		list ( GET ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize-1 subprj_name )
-				
+		
+		#defining ${subprj_name}_DIR as build directory.
+		#We need it later to get location of libraries and other build results, to work in the same way as bin dependencies.
+		set ( ${subprj_name}_DIR ${CMAKE_CURRENT_BINARY_DIR}/${dir_name} )
+		
 		if ( ${subprj_name}_INCLUDE_DIR )
 
 			#dependencies headers ( need to be included after project's own headers )
@@ -204,7 +213,10 @@ macro(WkLinkBinDepends package_name)
 		target_link_libraries(${PROJECT_NAME} ${${package_var_name}_LIBRARIES})
 		message ( STATUS "== Binary Dependency ${package_name} libs : ${${package_var_name}_LIBRARIES} OK !")
 
-		mark_as_advanced ( CLEAR ${package_var_name}_LIBRARIES ) 
+		#using fullpath libraries from here on
+		
+		
+		mark_as_advanced ( CLEAR ${package_var_name}_LIBRARIES )
 		
 		IF ( WIN32 )
 			message ( STATUS "== Binary Dependency ${package_name} runlibs : ${${package_var_name}_RUN_LIBRARIES} OK !")
@@ -234,7 +246,8 @@ macro(WkLinkBinDepends package_name)
 
 		#If it s a custom Wk-dependency we need to use the Export from the dependency to be able to access built targets.
 		if ( ${package_name}_DIR )
-			file( APPEND ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Export.cmake "
+			#we need to add this to config and not export, as export will be erased by cmake during build configuration from cache.
+			file( APPEND ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake "
 			
 #Propagating imported targets
 if ( EXISTS \"${${package_name}_FDIR}/${package_name}Export.cmake\" )
@@ -261,19 +274,6 @@ endif ( WIN32 )
 	endif ( ${package_var_name}_FOUND )
 	
 endmacro(WkLinkBinDepends package_name)
-
-macro (WkCopyDepends depend target)
-	SetPackageVarName( package_var_name ${depend} )
-	#message ( "${depend} -> ${package_var_name}" )
-
-	# we might have multiple libs in one dependency
-	foreach ( libarg ${${depend}_RUN_LIBRARIES} ) 
-		if ( NOT libarg )
-			message ( SEND_ERROR "Error with dependency, needed to run ${target} : ${libarg}" )
-		endif ( NOT libarg )
-		ADD_CUSTOM_COMMAND( TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${depend}>" "$<TARGET_FILE_DIR:${target}>" COMMENT "Copying $<TARGET_FILE:${depend}> to $<TARGET_FILE_DIR:${target}>" )
-	endforeach ( libarg ${${depend}_RUN_LIBRARIES} )
-endmacro(WkCopyDepends )
 
 #
 # Joining Dependencies for build
@@ -303,7 +303,6 @@ macro(WkLinkSrcDepends subprj_name)
 		ENDIF ( WIN32 )
 		
 		# Once the project is built with it, the dependency becomes mandatory
-		# However we need to propagate the location of Custom Wk-dependencies, to make it easier for later
 		if ( ${subprj_name}_DIR )
 			get_filename_component( ${subprj_name}_FDIR ${${subprj_name}_DIR} ABSOLUTE )
 		endif ( ${subprj_name}_DIR )
@@ -316,7 +315,9 @@ macro(WkLinkSrcDepends subprj_name)
 
 		#If it s a custom Wk-dependency we need to use the Export from the dependency to be able to access built targets.
 		if ( ${subprj_name}_DIR )
-			file( APPEND ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Export.cmake "
+			#we need to add this to config and not export, as export will be erased by cmake during build configuration from cache.
+			message(STATUS "Modifying ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Export.cmake about ${${subprj_name}_FDIR}/${subprj_name}Export.cmake" )
+			file( APPEND ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake "
 			
 #Propagating imported targets
 if ( EXISTS \"${${subprj_name}_FDIR}/${subprj_name}Export.cmake\" )
