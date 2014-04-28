@@ -45,14 +45,6 @@ WkDataDir (subdata)
 #build rules for the project
 WkBuild( LIBRARY SHARED )
 
-WkDoc( )
-#WkSvn( )
-
 #Testing
 WkTestBuild( maintestDsub )
 WkTestRun( ProjectDsub maintestDsub )
-
-WkInstall ( )
-
-WkPack ( )
-

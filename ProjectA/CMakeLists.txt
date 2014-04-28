@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2009, Asmodehn's Corp.
+# Copyright (c) 2009-2014, Asmodehn's Corp.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without 
@@ -41,11 +41,6 @@ WkDepends( ProjectB REQUIRED)
 # ProjectC should be propagated by ProjectB
 WkBuild( LIBRARY SHARED)
 
-# Generate Documentation Target
-WkDoc( )
-#WkSvn()
-
 #Testing
 WkTestBuild( maintest )
 WkTestRun( ProjectA maintest )
-
