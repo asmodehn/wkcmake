@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2009-2010, Asmodehn's Corp.
+# Copyright (c) 2009-2014, Asmodehn's Corp.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without 
@@ -195,7 +195,7 @@ macro(WkLinkBinDepends package_name)
 		#hiding the original cmake Module variable, displaying the WkCMake later on
 		mark_as_advanced ( FORCE ${package_var_name}_LIBRARY ) 
 		
-		# to handle cmake moule who dont have exactly the same standard as WkModules
+		# to handle cmake module who dont have exactly the same standard as WkModules
 		if ( NOT ${package_var_name}_LIBRARIES )
 			set ( ${package_var_name}_LIBRARIES ${${package_var_name}_LIBRARY} CACHE FILEPATH "${package_name} Libraries ")
 		endif ( NOT ${package_var_name}_LIBRARIES )
