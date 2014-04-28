@@ -442,13 +442,13 @@ CMAKE_POLICY(VERSION 2.6)
 	# Defining where to put what has been built
 	#
 	
-	SET(${PROJECT_NAME}_LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_LIB_DIR} CACHE PATH "Ouput directory for ${Project} libraries." )
-	mark_as_advanced(FORCE ${PROJECT_NAME}_LIBRARY_OUTPUT_PATH)
-	SET(LIBRARY_OUTPUT_PATH "${${PROJECT_NAME}_LIBRARY_OUTPUT_PATH}" CACHE INTERNAL "Internal CMake libraries output directory. Do not edit." FORCE)
+	SET(${CMAKE_PROJECT_NAME}_LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${CMAKE_PROJECT_NAME}_LIB_DIR} CACHE PATH "Ouput directory for ${Project} libraries." )
+	mark_as_advanced(FORCE ${CMAKE_PROJECT_NAME}_LIBRARY_OUTPUT_PATH)
+	SET(LIBRARY_OUTPUT_PATH "${${CMAKE_PROJECT_NAME}_LIBRARY_OUTPUT_PATH}" CACHE INTERNAL "Internal CMake libraries output directory. Do not edit." FORCE)
 	
-	SET(${PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_BIN_DIR} CACHE PATH "Ouput directory for ${Project} executables." )
-	mark_as_advanced(FORCE ${PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH)
-	SET(EXECUTABLE_OUTPUT_PATH "${${PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH}" CACHE INTERNAL "Internal CMake executables output directory. Do not edit." FORCE)
+	SET(${CMAKE_PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${CMAKE_PROJECT_NAME}_BIN_DIR} CACHE PATH "Ouput directory for ${Project} executables." )
+	mark_as_advanced(FORCE ${CMAKE_PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH)
+	SET(EXECUTABLE_OUTPUT_PATH "${${CMAKE_PROJECT_NAME}_EXECUTABLE_OUTPUT_PATH}" CACHE INTERNAL "Internal CMake executables output directory. Do not edit." FORCE)
 
 	#
 	# Copying include directory if needed after build ( for  use by another project later )
