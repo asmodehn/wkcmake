@@ -51,28 +51,48 @@ include ( "${WKCMAKE_DIR}/WkCompilerSetup.cmake" )
 
 
 macro(WkIncludeDir dir)
-	set ( ${PROJECT_NAME}_INCLUDE_DIR ${dir} CACHE PATH "Headers directory for autodetection by WkCMake for ${PROJECT_NAME}" )
-	mark_as_advanced ( ${PROJECT_NAME}_INCLUDE_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkIncludeDir() has to be called after WkProject()")
+	else ()
+		set ( ${PROJECT_NAME}_INCLUDE_DIR ${dir} CACHE PATH "Headers directory for autodetection by WkCMake for ${PROJECT_NAME}" )
+		mark_as_advanced ( ${PROJECT_NAME}_INCLUDE_DIR )
+	endif()
 endmacro(WkIncludeDir dir)
 
 macro(WkSrcDir dir)
-	set ( ${PROJECT_NAME}_SRC_DIR ${dir} CACHE PATH "Sources directory for autodetection by WkCMake for ${PROJECT_NAME}" )
-	mark_as_advanced ( ${PROJECT_NAME}_SRC_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkSrcDir has to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_SRC_DIR ${dir} CACHE PATH "Sources directory for autodetection by WkCMake for ${PROJECT_NAME}" )
+		mark_as_advanced ( ${PROJECT_NAME}_SRC_DIR )
+	endif()
 endmacro(WkSrcDir dir)
 
 macro(WkBinDir dir)
-	set ( ${PROJECT_NAME}_BIN_DIR ${dir} CACHE PATH "Binary directory for WkCMake build products for ${PROJECT_NAME}" )
-	mark_as_advanced ( ${PROJECT_NAME}_BIN_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkBinDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_BIN_DIR ${dir} CACHE PATH "Binary directory for WkCMake build products for ${PROJECT_NAME}" )
+		mark_as_advanced ( ${PROJECT_NAME}_BIN_DIR )
+	endif()
 endmacro(WkBinDir dir)
 
 macro(WkLibDir dir)
-	set ( ${PROJECT_NAME}_LIB_DIR ${dir} CACHE PATH "Library directory for WkCMake build products for ${PROJECT_NAME}" )
-	mark_as_advanced ( ${PROJECT_NAME}_LIB_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkLibDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_LIB_DIR ${dir} CACHE PATH "Library directory for WkCMake build products for ${PROJECT_NAME}" )
+		mark_as_advanced ( ${PROJECT_NAME}_LIB_DIR )
+	endif()
 endmacro(WkLibDir dir)
 
 macro(WkDataDir dir)
-	set ( ${PROJECT_NAME}_DATA_DIR ${dir} CACHE PATH "Data directory for WkCMake build products for ${PROJECT_NAME}" )
-	mark_as_advanced ( ${PROJECT_NAME}_DATA_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkDataDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_DATA_DIR ${dir} CACHE PATH "Data directory for WkCMake build products for ${PROJECT_NAME}" )
+		mark_as_advanced ( ${PROJECT_NAME}_DATA_DIR )
+	endif()
 endmacro(WkDataDir dir)
 
 
@@ -81,6 +101,12 @@ CMAKE_POLICY(PUSH)
 CMAKE_POLICY(VERSION 2.6)
 	project(${project_name_arg} ${ARGN})
 	
+	#To add this project as a source dependency to a master project
+	if ( NOT ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+		set (${CMAKE_PROJECT_NAME}_SRCDEPENDS ${${CMAKE_PROJECT_NAME}_SRCDEPENDS} ${PROJECT_NAME} CACHE STRING "List of Project Dependencies that needs to be built with the Main Project")
+	endif()
+	
+	message(STATUS "= Configuring ${PROJECT_NAME}")
     #TODO : check what happens if we have hierarchy of subdirectories with wkcmake projects
 	SET(${PROJECT_NAME}_CXX_COMPILER_LOADED "${CMAKE_CXX_COMPILER_LOADED}" CACHE INTERNAL "Whether C++ compiler has been loaded for the project or not" FORCE)
 	#TODO : make sure this doesnt get the C of CXX
@@ -200,11 +226,11 @@ CMAKE_POLICY(VERSION 2.6)
     #Setting up project structure defaults for directories
     # Note that if these have been already defined with the same macros, the calls here wont have any effect ( wont changed cached value )
     WkIncludeDir("include")
-    WkSrcDir("src")
-    WkBinDir("bin")
-    WkLibDir("lib")
-    WkDataDir("data")
-
+	WkSrcDir("src")
+	WkBinDir("bin")
+	WkLibDir("lib")
+	WkDataDir("data")
+	
     #Doing compiler setup in Build step, because :
     # - it is related to target, not overall project ( even if environment is same for cmake, settings can be different for each target )
     # - custom build options may have been defined before ( and will be used instead of defaults )
@@ -333,12 +359,14 @@ CMAKE_POLICY(VERSION 2.6)
 
 	if(${project_type} STREQUAL "LIBRARY")
 		add_library(${PROJECT_NAME} ${${PROJECT_NAME}_load_type} ${SOURCES})
+		#storing a variable for top project to be able to link it
+		set(${PROJECT_NAME}_LIBRARY ${PROJECT_NAME} CACHE FILEPATH "${PROJECT_NAME} Library")
 		if ( ${${PROJECT_NAME}_load_type} STREQUAL "SHARED" )
 			set_target_properties(${PROJECT_NAME} PROPERTIES DEFINE_SYMBOL "WK_${PROJECT_NAME}_SHAREDLIB_BUILD")
 			#if on windows we need to care about run libraries ( Dlls )
 			if ( WIN32 )
 				get_target_property(${PROJECT_NAME}_LOCATION ${PROJECT_NAME} LOCATION)
-				set( ${PROJECT_NAME}_RUN_LIBRARIES "${${PROJECT_NAME}_LOCATION}")
+				set(${PROJECT_NAME}_RUN_LIBRARIES "${${PROJECT_NAME}_LOCATION}" CACHE FILEPATH "${PROJECT_NAME} DLLs" )
 				#message( "Project run lib WkBuild : ${${PROJECT_NAME}_RUN_LIBRARIES} " )
 			endif( WIN32 )
 		endif ( ${${PROJECT_NAME}_load_type} STREQUAL "SHARED" )
@@ -444,9 +472,14 @@ CMAKE_POLICY(VERSION 2.6)
 	
 	WkGenConfig( )
 	
-	#Linking dependencies, and modifying config files
-	foreach (dep ${${PROJECT_NAME}_DEPENDS} )
-		WkLinkDepends( ${dep} )
+	#Linking source dependencies, and modifying config files
+	foreach (sdep ${${PROJECT_NAME}_SRCDEPENDS} )
+		WkLinkSrcDepends( ${sdep} )
+	endforeach()
+	
+	#Linking binary dependencies, and modifying config files
+	foreach (bdep ${${PROJECT_NAME}_BINDEPENDS} )
+		WkLinkBinDepends( ${bdep} )
 	endforeach()
 
 	WkFinConfig()
@@ -484,7 +517,7 @@ MACRO (WkExtData)
 	foreach ( data ${ARGN} )
 		FILE(TO_NATIVE_PATH "${data}" ${data}_NATIVE_SRC_PATH)
 		FILE(TO_NATIVE_PATH "${PROJECT_BINARY_DIR}/${WKCMAKE_DATA_DIR}/${data}" ${data}_NATIVE_BLD_PATH)
-		ADD_CUSTOM_COMMAND( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${${data}_NATIVE_SRC_PATH}" "${${data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${data}_NATIVE_SRC_PATH} to ${${data}_NATIVE_BLD_PATH}" )
+		ADD_CUSTOM_COMMAND( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${${data}_NATIVE_SRC_PATH}" "${${data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${data}_NATIVE_SRC_PATH} to ${${data}_NATIVE_BLD_PATH}" VERBATIM)
 	endforeach ( data ${ARGN} )
 	
 ENDMACRO (WkExtData data_path)
