@@ -52,7 +52,10 @@ include ( "${WKCMAKE_DIR}/WkUtils.cmake" )
 # WkDepends( dependency_name [QUIET / REQUIRED] )
 
 macro (WkDepends package_name)
-	
+
+	message (STATUS ">>>WkDepends called with ${package_name}")
+					
+
 	#
 	# First check if the package is a subdirectory
 	#
@@ -66,8 +69,9 @@ macro (WkDepends package_name)
 			
 		ELSE()
 			#binary dependency ( by wkcmake )
-			#TODO : support basic cmake dependency (*Export.txt files ?)
-			file(GLOB files "${package_name}/[!CPack]*Config.cmake")
+			#TODO : support basic cmake dependency (*Export.txt files) ?
+			file(GLOB files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${package_name}/*Config.cmake")
+			list(REMOVE_ITEM files "${package_name}/CPackSourceConfig.cmake" "${package_name}/CPackConfig.cmake")
 			#message (STATUS "${files} FOUND !")
 			foreach(file ${files})
 				#get dependency name
