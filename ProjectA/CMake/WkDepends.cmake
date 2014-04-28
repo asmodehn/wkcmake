@@ -271,7 +271,7 @@ macro (WkCopyDepends depend target)
 		if ( NOT libarg )
 			message ( SEND_ERROR "Error with dependency, needed to run ${target} : ${libarg}" )
 		endif ( NOT libarg )
-		ADD_CUSTOM_COMMAND( TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${depend}>" "$<TARGET_FILE_DIR:${target}>" COMMENT "Copying $<TARGET_FILE:${depend}> to $<TARGET_FILE_DIR:${target}>" )
+		ADD_CUSTOM_COMMAND( TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${libarg}" "$<TARGET_FILE_DIR:${target}>" COMMENT "Copying ${libarg} to $<TARGET_FILE_DIR:${target}>" )
 	endforeach ( libarg ${${depend}_RUN_LIBRARIES} )
 endmacro(WkCopyDepends )
 
