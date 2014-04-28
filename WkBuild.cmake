@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2009-2011, Asmodehn's Corp.
+# Copyright (c) 2009-2014, Asmodehn's Corp.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without 
@@ -160,20 +160,6 @@ set(${PROJECT_NAME}_LIBRARY ${PROJECT_NAME} )
 set(${PROJECT_NAME}_LIBRARIES \"\${${PROJECT_NAME}_LIBRARY}\")
 	" )
 	
-	get_target_property(${PROJECT_NAME}_LOCATION ${PROJECT_NAME} LOCATION)
-	get_target_property(${PROJECT_NAME}_TYPE ${PROJECT_NAME} TYPE)
-	if ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
-		file( APPEND ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake "
-		
-#On windows we need to copy the dlls as running dependencies along with the project's executable(s)
-#as a complement to the cmake mechanism...
-if ( WIN32 )
-		set(${PROJECT_NAME}_RUN_LIBRARIES \"${${PROJECT_NAME}_RUN_LIBRARIES}\" )
-endif ( WIN32)
-
-		")
-	endif ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
-	
 	file( APPEND ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake "
 set(${PROJECT_NAME}_FOUND TRUE)
 	")	
@@ -196,9 +182,6 @@ set(${PROJECT_NAME}_INCLUDE_DIRS \"\${${PROJECT_NAME}_INCLUDE_DIRS}\" \"\${${PRO
 #Displaying detected dependencies in interface, and storing in cache
 set(${PROJECT_NAME}_INCLUDE_DIRS \"\${${PROJECT_NAME}_INCLUDE_DIRS}\" CACHE PATH \"${PROJECT_NAME} Headers\" )
 set(${PROJECT_NAME}_LIBRARIES \"\${${PROJECT_NAME}_LIBRARIES}\" CACHE FILEPATH \"${PROJECT_NAME} Libraries\")
-if ( WIN32 )
-	set(${PROJECT_NAME}_RUN_LIBRARIES \"\${${PROJECT_NAME}_RUN_LIBRARIES}\" CACHE FILEPATH \"${PROJECT_NAME} DLLs\" )
-endif ( WIN32 )	
 
 CMAKE_POLICY(POP)
 	
@@ -363,12 +346,6 @@ CMAKE_POLICY(VERSION 2.6)
 		set(${PROJECT_NAME}_LIBRARY ${PROJECT_NAME} CACHE FILEPATH "${PROJECT_NAME} Library")
 		if ( ${${PROJECT_NAME}_load_type} STREQUAL "SHARED" )
 			set_target_properties(${PROJECT_NAME} PROPERTIES DEFINE_SYMBOL "WK_${PROJECT_NAME}_SHAREDLIB_BUILD")
-			#if on windows we need to care about run libraries ( Dlls )
-			if ( WIN32 )
-				get_target_property(${PROJECT_NAME}_LOCATION ${PROJECT_NAME} LOCATION)
-				set(${PROJECT_NAME}_RUN_LIBRARIES "${${PROJECT_NAME}_LOCATION}" CACHE FILEPATH "${PROJECT_NAME} DLLs" )
-				#message( "Project run lib WkBuild : ${${PROJECT_NAME}_RUN_LIBRARIES} " )
-			endif( WIN32 )
 		endif ( ${${PROJECT_NAME}_load_type} STREQUAL "SHARED" )
 	elseif (${project_type} STREQUAL "EXECUTABLE")
 		add_executable(${PROJECT_NAME} ${SOURCES})
