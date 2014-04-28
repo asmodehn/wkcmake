@@ -135,7 +135,11 @@ macro (WkBinDepends package_name)
 
 			message ( STATUS "== Binary Dependency ${package_name} : FOUND ! " )
 
-			set ( ${PROJECT_NAME}_BINDEPENDS "${${PROJECT_NAME}_BINDEPENDS}" "${package_name}" ) 
+			if ( DEFINED ${PROJECT_NAME}_BINDEPENDS )
+				set ( ${PROJECT_NAME}_BINDEPENDS "${${PROJECT_NAME}_BINDEPENDS}" "${package_name}" )
+			else()
+				set ( ${PROJECT_NAME}_BINDEPENDS "${package_name}" )
+			endif()
 			
 		else ( ${package_var_name}_FOUND )	
 			message ( STATUS "== Binary Dependency ${package_name} : NOT FOUND ! " )
@@ -269,19 +273,6 @@ endif ( WIN32 )
 	endif ( ${package_var_name}_FOUND )
 	
 endmacro(WkLinkBinDepends package_name)
-
-macro (WkCopyDepends depend target)
-	SetPackageVarName( package_var_name ${depend} )
-	#message ( "${depend} -> ${package_var_name}" )
-
-	# we might have multiple libs in one dependency
-	foreach ( libarg ${${depend}_RUN_LIBRARIES} ) 
-		if ( NOT libarg )
-			message ( SEND_ERROR "Error with dependency, needed to run ${target} : ${libarg}" )
-		endif ( NOT libarg )
-		ADD_CUSTOM_COMMAND( TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${libarg}" "$<TARGET_FILE_DIR:${target}>" COMMENT "Copying ${libarg} to $<TARGET_FILE_DIR:${target}>" )
-	endforeach ( libarg ${${depend}_RUN_LIBRARIES} )
-endmacro(WkCopyDepends )
 
 #
 # Joining Dependencies for build
