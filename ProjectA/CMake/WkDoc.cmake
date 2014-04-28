@@ -35,8 +35,12 @@ if ( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6 )
 endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6 )
 
 macro(WkDocDir dir)
-	set ( ${PROJECT_NAME}_DOC_DIR ${dir} CACHE PATH "Documentation directory for ${PROJECT_NAME}" )
-	mark_as_advanced ( ${PROJECT_NAME}_DOC_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkDocDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_DOC_DIR ${dir} CACHE PATH "Documentation directory for ${PROJECT_NAME}" )
+		mark_as_advanced ( ${PROJECT_NAME}_DOC_DIR )
+	endif()
 endmacro(WkDocDir dir)
 
 macro( WKDoc )
@@ -46,8 +50,8 @@ IF (DOXYGEN_FOUND)
   option (${PROJECT_NAME}_CODE_DOC "Enable Code Documentation" OFF)
   IF ( ${PROJECT_NAME}_CODE_DOC )
 		
-  WkDocDir("doc")
-
+	WkDocDir("doc")
+	
   # click+jump in Emacs and Visual Studio (for doxy.config) (jw)
   IF    (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv)")
     SET(DOXY_WARN_FORMAT "\"$file($line) : $text \"")
@@ -83,10 +87,9 @@ endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${WKCMAKE_DOC_DIR}/Doxyfile" )
   ADD_CUSTOM_TARGET(${PROJECT_NAME}_doc ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/${WKCMAKE_DOC_DIR}/Doxyfile" )
   
   #forcing doc generation whenever main target is being built
-  add_dependencies( ${PROJECT_NAME}  ${PROJECT_NAME}_doc )
-
-  ENDIF ( ${PROJECT_NAME}_CODE_DOC ) 
- 
+  #add_dependencies( ${PROJECT_NAME}  ${PROJECT_NAME}_doc )
+  
+  ENDIF ( ${PROJECT_NAME}_CODE_DOC )
 ENDIF(DOXYGEN_FOUND)
 
 endmacro( WKDoc )
