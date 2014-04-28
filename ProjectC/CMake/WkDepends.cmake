@@ -161,7 +161,7 @@ macro (WkSrcDepends dir_name)
 
 			#dependencies headers ( need to be included after project's own headers )
 			#Note : we use the include dir from source, not from the copy in binary dir.
-			file( TO_CMAKE_PATH ${dir_name}/${${subprj_name}_INCLUDE_DIR} subprj_include_path)
+			file( TO_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${dir_name}/${${subprj_name}_INCLUDE_DIR} subprj_include_path)
 			file( TO_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${dir_name}/CMakeFiles subprj_include_wk_path)
 			
 			#To match a binary dependency variable names :
