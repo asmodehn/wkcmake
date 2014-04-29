@@ -36,7 +36,7 @@ WkCMakeDir ( CMake )
 WkProject( Android CXX )
 
 #build rules for the project
-WkBuild( LIBRARY STATIC )
+WkBuild( LIBRARY SHARED )
 
 #Testing
 WkTestBuild( maintest )

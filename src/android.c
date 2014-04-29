@@ -28,7 +28,7 @@
  *
  */
 
-#include "android/header.h"
+#include "Android/header.h"
 
 #include <stdio.h>
 
