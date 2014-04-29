@@ -46,24 +46,36 @@ endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6.3 )
 # Defining where Test should be found on WkTestBuild call.
 #
 macro(WkTestDir dir)
- 	set ( ${PROJECT_NAME}_TEST_DIR ${dir} CACHE PATH "Test directory for ${PROJECT_NAME}" )    
-  	mark_as_advanced ( ${PROJECT_NAME}_TEST_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkTestDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_TEST_DIR ${dir} CACHE PATH "Test directory for ${PROJECT_NAME}" )    
+		mark_as_advanced ( ${PROJECT_NAME}_TEST_DIR )
+	endif()
 endmacro(WkTestDir dir)
 
 #
 # Defining where data used by tests should be found vs the source.
 #
 macro(WkTestDataDir dir)
-	set ( ${PROJECT_NAME}_TEST_DATA_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} source tests with root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}" )
-	mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkTestDataDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_TEST_DATA_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} source tests with root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}" )
+		mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_DIR )
+	endif()
 endmacro(WkTestDataDir dir)
 
 #
 # Defining where data used by tests should be found when using the build exe.
 #
 macro(WkTestDataBuildDir dir)
-	set ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} build tests products with root at ${PROJECT_BINARY_DIR}" )
-	mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR )
+	if (${PROJECT_NAME} STREQUAL "Project")
+		message(FATAL_ERROR "WkTestDataBuildDir needs to be called after WkProject")
+	else ()
+		set ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} build tests products with root at ${PROJECT_BINARY_DIR}" )
+		mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR )
+	endif()
 endmacro(WkTestDataBuildDir dir)
 
 #
@@ -75,12 +87,14 @@ MACRO(WkTestBuild test_name)
     #Defining default folders for tests
     # Note that if these have been already defined with the same macros, the calls here wont have any effect ( wont changed cached value )
     # Default: "test" w root at ${PROJECT_SOURCE_DIR} 
-    WkTestDir("test")
-    # Default: "data" w root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}    
-    WkTestDataDir("data")
-    # Default: "${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}" w root at ${PROJECT_BINARY_DIR}
-    WkTestDataBuildDir("${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}" )
-    
+	WkTestDir("test")
+	
+	# Default: "data" w root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}
+	WkTestDataDir("data")
+	
+	# Default: "${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}" w root at ${PROJECT_BINARY_DIR}
+	WkTestDataBuildDir("${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}")
+	
 	option(${PROJECT_NAME}_ENABLE_TESTS "Wether or not you want the project to include the tests and enable automatic testing for ${PROJECT_NAME}" OFF)
 
 	IF(${PROJECT_NAME}_ENABLE_TESTS)
@@ -140,17 +154,22 @@ MACRO(WkTestBuild test_name)
 			#We need to do that everytime to make sure we have the latest version
 			
 			if ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
-				ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${test_name}>"
-														COMMENT "Copying $<TARGET_FILE:${PROJECT_NAME}> to $<TARGET_FILE_DIR:${test_name}>" )
+				ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${test_name}>"
+														COMMENT "Copying $<TARGET_FILE:${PROJECT_NAME}> to $<TARGET_FILE_DIR:${test_name}>"
+														VERBATIM )
 			endif ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
 			
-			message ( STATUS "== Detected external dependencies for ${test_name} : ${${PROJECT_NAME}_DEPENDS}" )
+			message ( STATUS "== Detected binary dependencies for ${test_name} : ${${PROJECT_NAME}_BINDEPENDS}" )
+			message ( STATUS "== Detected source dependencies for ${test_name} : ${${PROJECT_NAME}_SRCDEPENDS}" )
 			#if win32, moving all dependencies' run libraries
 			if ( WIN32 )
 				#needed for each run library dependency as well
-				foreach ( looparg ${${PROJECT_NAME}_DEPENDS} )
-					WkCopyDepends(${looparg} ${test_name} )
-				endforeach ( looparg ${${PROJECT_NAME}_DEPENDS} )
+				foreach ( depend ${${PROJECT_NAME}_BINDEPENDS} )
+					ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${depend}>" "$<TARGET_FILE_DIR:${test_name}>" COMMENT "Copying $<TARGET_FILE:${depend}> to $<TARGET_FILE_DIR:${test_name}>" )
+				endforeach ( depend ${${PROJECT_NAME}_BINDEPENDS} )
+				foreach ( depend ${${PROJECT_NAME}_SRCDEPENDS} )
+					ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${depend}>" "$<TARGET_FILE_DIR:${test_name}>" COMMENT "Copying $<TARGET_FILE:${depend}> to $<TARGET_FILE_DIR:${test_name}>" )
+				endforeach ( depend ${${PROJECT_NAME}_SRCDEPENDS} )
 			endif ( WIN32 )
 			
 		ENDIF (testsource)
@@ -172,7 +191,7 @@ MACRO (WkTestData test_name )
 		# warning : tests are run from the project root...
 		FILE(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}" ${test_data}_NATIVE_SRC_PATH)
 		FILE(TO_NATIVE_PATH "${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}" ${test_data}_NATIVE_BLD_PATH)
-		ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${${test_data}_NATIVE_SRC_PATH}" "${${test_data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${test_data}_NATIVE_SRC_PATH} to ${${test_data}_NATIVE_BLD_PATH}" )
+		ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${${test_data}_NATIVE_SRC_PATH}" "${${test_data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${test_data}_NATIVE_SRC_PATH} to ${${test_data}_NATIVE_BLD_PATH}" )
 		
 		#message ("test data src: ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}")
 		#message ("test data dest: ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}")

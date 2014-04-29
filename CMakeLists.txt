@@ -38,15 +38,7 @@ WkProject( Android CXX )
 #build rules for the project
 WkBuild( LIBRARY STATIC )
 
-WkDoc( )
-#WkSvn( )
-#TODO : WkGit()
-
 #Testing
 WkTestBuild( maintest )
 WkTestRun( Android maintest )
-
-WkInstall ( )
-
-WkPack ( )
 
