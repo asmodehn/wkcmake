@@ -52,10 +52,7 @@ include ( "${WKCMAKE_DIR}/WkUtils.cmake" )
 # WkDepends( dependency_name [QUIET / REQUIRED] )
 
 macro (WkDepends package_name)
-
-	message (STATUS ">>>WkDepends called with ${package_name}")
-					
-
+	
 	#
 	# First check if the package is a subdirectory
 	#

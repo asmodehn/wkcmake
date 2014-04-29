@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2009, Asmodehn's Corp.
+# Copyright (c) 2009-2014, Asmodehn's Corp.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without 
@@ -60,9 +60,6 @@ WkDepends("Custom Depend/ProjectDsub_bin/build" REQUIRED)
 WkDepends("Custom Depend/ProjectEsub_src" REQUIRED)
 
 WkBuild( LIBRARY SHARED )
-
-WkDoc( )
-#WkSvn()
 
 #Testing
 WkTestBuild( maintestB )

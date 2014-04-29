@@ -38,15 +38,6 @@ WkProject( ProjectC C )
 #build rules for the project
 WkBuild( LIBRARY SHARED )
 
-WkDoc( )
-#WkSvn( )
-#TODO : WkGit()
-
 #Testing
 WkTestBuild( maintestC )
 WkTestRun( ProjectC maintestC )
-
-WkInstall ( )
-
-WkPack ( )
-
