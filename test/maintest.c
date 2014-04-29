@@ -28,9 +28,9 @@
  *
  */
 
-#include "ProjectC/header.h"
+#include "Android/header.h"
 
 int main ( int argc, char* argv[] )
 {
-    return C_display("test C");
+    return android_display("test C");
 }
