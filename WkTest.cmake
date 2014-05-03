@@ -148,12 +148,12 @@ MACRO(WkTestBuild test_name)
 			#if win32, moving all dependencies' run libraries
 			if ( WIN32 )
 				#needed for each run library dependency as well
-				foreach ( looparg ${${PROJECT_NAME}_BINDEPENDS} )
-					WkCopyDepends(${looparg} ${test_name} )
-				endforeach ( looparg ${${PROJECT_NAME}_BINDEPENDS} )
-				foreach ( looparg ${${PROJECT_NAME}_SRCDEPENDS} )
-					WkCopyDepends(${looparg} ${test_name} )
-				endforeach ( looparg ${${PROJECT_NAME}_SRCDEPENDS} )
+				foreach ( depend ${${PROJECT_NAME}_BINDEPENDS} )
+					ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${depend}>" "$<TARGET_FILE_DIR:${test_name}>" COMMENT "Copying $<TARGET_FILE:${depend}> to $<TARGET_FILE_DIR:${test_name}>" )
+				endforeach ( depend ${${PROJECT_NAME}_BINDEPENDS} )
+				foreach ( depend ${${PROJECT_NAME}_SRCDEPENDS} )
+					ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${depend}>" "$<TARGET_FILE_DIR:${test_name}>" COMMENT "Copying $<TARGET_FILE:${depend}> to $<TARGET_FILE_DIR:${test_name}>" )
+				endforeach ( depend ${${PROJECT_NAME}_SRCDEPENDS} )
 			endif ( WIN32 )
 			
 		ENDIF (testsource)
