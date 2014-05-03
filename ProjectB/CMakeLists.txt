@@ -43,8 +43,7 @@ WkLibDir ( "Custom Lib" )
 WkDataDir ( "Custom Data")
 WkTestDir ( "Custom Test" )
 WkDocDir ( "Custom Doc" )
-WkTestDataDir ( "Custom Test Data Src")
-WkTestDataBuildDir ( "Custom Test Data Build")
+WkTestDataDir ( "Custom Test Data")
 
 #Build rules
 #This depends is external. That means it should be built previously by another method.
