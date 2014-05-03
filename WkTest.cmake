@@ -67,18 +67,6 @@ macro(WkTestDataDir dir)
 endmacro(WkTestDataDir dir)
 
 #
-# Defining where data used by tests should be found when using the build exe.
-#
-macro(WkTestDataBuildDir dir)
-	if (${PROJECT_NAME} STREQUAL "Project")
-		message(FATAL_ERROR "WkTestDataBuildDir needs to be called after WkProject")
-	else ()
-		set ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR ${dir} CACHE PATH "Data directory for ${PROJECT_NAME} build tests products with root at ${PROJECT_BINARY_DIR}" )
-		mark_as_advanced ( ${PROJECT_NAME}_TEST_DATA_BUILD_DIR )
-	endif()
-endmacro(WkTestDataBuildDir dir)
-
-#
 #WkTestBuild( test_name [test_source [...] ] )
 #
 
@@ -91,10 +79,7 @@ MACRO(WkTestBuild test_name)
 	
 	# Default: "data" w root at ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}
 	WkTestDataDir("data")
-	
-	# Default: "${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}" w root at ${PROJECT_BINARY_DIR}
-	WkTestDataBuildDir("${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}")
-	
+		
 	option(${PROJECT_NAME}_ENABLE_TESTS "Wether or not you want the project to include the tests and enable automatic testing for ${PROJECT_NAME}" OFF)
 
 	IF(${PROJECT_NAME}_ENABLE_TESTS)
@@ -188,10 +173,16 @@ MACRO (WkTestData test_name )
 	foreach ( test_data ${ARGN} )
 		
 		# warning : tests are run from the project root...
-		FILE(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}" ${test_data}_NATIVE_SRC_PATH)
-		FILE(TO_NATIVE_PATH "${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}" ${test_data}_NATIVE_BLD_PATH)
-		ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${${test_data}_NATIVE_SRC_PATH}" "${${test_data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${test_data}_NATIVE_SRC_PATH} to ${${test_data}_NATIVE_BLD_PATH}" )
-		
+		#FILE(TO_NATIVE_PATH ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data} ${test_data}_NATIVE_SRC_PATH)
+		#FILE(TO_NATIVE_PATH ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data} ${test_data}_NATIVE_BLD_PATH)
+		#ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${${test_data}_NATIVE_SRC_PATH}" "${${test_data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${test_data}_NATIVE_SRC_PATH} to ${${test_data}_NATIVE_BLD_PATH}" VERBATIM)
+		ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+			"${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}"
+			"${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}"
+			COMMENT
+			"Copying ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data} to ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}"
+			VERBATIM)
+
 		#message ("test data src: ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}")
 		#message ("test data dest: ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}")
 	
