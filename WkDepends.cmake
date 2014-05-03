@@ -208,7 +208,6 @@ macro(WkLinkBinDepends package_name)
 		if ( NOT ${package_var_name}_LIBRARIES )
 			set ( ${package_var_name}_LIBRARIES ${${package_var_name}_LIBRARY} CACHE FILEPATH "${package_name} Libraries ")
 		endif ( NOT ${package_var_name}_LIBRARIES )
-		#todo : maybe we need a complete layer over that, Wk Modules handling Wk fetures such as run_libraries and correct variable name...
 
 		target_link_libraries(${PROJECT_NAME} ${${package_var_name}_LIBRARIES})
 		message ( STATUS "== Binary Dependency ${package_name} libs : ${${package_var_name}_LIBRARIES} OK !")
@@ -216,21 +215,9 @@ macro(WkLinkBinDepends package_name)
 		#using fullpath libraries from here on
 		
 		
-		mark_as_advanced ( CLEAR ${package_var_name}_LIBRARIES )
 		
-		IF ( WIN32 )
-			message ( STATUS "== Binary Dependency ${package_name} runlibs : ${${package_var_name}_RUN_LIBRARIES} OK !")
-			#if the find module also defines the runtime libraries ( Wk find module standard  NOT CMAKE itself !)
-			# then we need to add the run libraries of the dependency to the current project myrun libraries
-			#set( ${PROJECT_NAME}_RUN_LIBRARIES "${${PROJECT_NAME}_RUN_LIBRARIES}" "${${package_var_name}_RUN_LIBRARIES}" CACHE FILEPATH "blabla")
-			#message( "Project run lib WkDepends : ${${PROJECT_NAME}_RUN_LIBRARIES} " )
-			
-			#TODO : here is the default case. We can assume if the variable RUN_LIBRARIES does not exist that
-			# either there is no dll needed OR
-			# the dll needed is delivered with the .lib file ( usual with windows dev environments, same as with SDL_* libs )
-			# that could be implemented
-			
-		ENDIF ( WIN32 )
+		
+		mark_as_advanced ( CLEAR ${package_var_name}_LIBRARIES )
 		
 		# Once the project is built with it, the dependency becomes mandatory
 		# However we need to propagate the location of Custom Wk-dependencies, to make it easier for later
@@ -263,9 +250,6 @@ endif ( EXISTS \"${${package_name}_FDIR}/${package_name}Export.cmake\" )
 # NB : It shouldnt hurt if the upper project also define it as its own dependency
 set(${PROJECT_NAME}_INCLUDE_DIRS \"${${package_var_name}_INCLUDE_DIRS}\" \${${PROJECT_NAME}_INCLUDE_DIRS} )
 set(${PROJECT_NAME}_LIBRARIES \${${PROJECT_NAME}_LIBRARIES} \"${${package_var_name}_LIBRARIES}\" )
-if ( WIN32 )
-	set(${PROJECT_NAME}_RUN_LIBRARIES \${${PROJECT_NAME}_RUN_LIBRARIES} \"${${package_var_name}_RUN_LIBRARIES}\" )
-endif ( WIN32 )	
 
 		")
 		
@@ -287,20 +271,6 @@ macro(WkLinkSrcDepends subprj_name)
 			
 		target_link_libraries(${PROJECT_NAME} ${${subprj_name}_LIBRARIES})
 		message ( STATUS "== Source Dependency ${subprj_name} libs : ${${subprj_name}_LIBRARIES} OK !")
-
-		IF ( WIN32 )
-			message ( STATUS "== Source Dependency ${subprj_name} runlibs : ${${subprj_name}_RUN_LIBRARIES} OK !")
-			#if the find module also defines the runtime libraries ( Wk find module standard  NOT CMAKE itself !)
-			# then we need to add the run libraries of the dependency to the current project myrun libraries
-			#set( ${PROJECT_NAME}_RUN_LIBRARIES "${${PROJECT_NAME}_RUN_LIBRARIES}" "${${package_var_name}_RUN_LIBRARIES}" CACHE FILEPATH "blabla")
-			#message( "Project run lib WkDepends : ${${PROJECT_NAME}_RUN_LIBRARIES} " )
-			
-			#TODO : here is the default case. We can assume if the variable RUN_LIBRARIES does not exist that
-			# either there is no dll needed OR
-			# the dll needed is delivered with the .lib file ( usual with windows dev environments, same as with SDL_* libs )
-			# that could be implemented
-			
-		ENDIF ( WIN32 )
 		
 		# Once the project is built with it, the dependency becomes mandatory
 		if ( ${subprj_name}_DIR )
@@ -333,9 +303,6 @@ endif ( EXISTS \"${${subprj_name}_FDIR}/${subprj_name}Export.cmake\" )
 # NB : It shouldnt hurt if the upper project also define it as its own dependency
 set(${PROJECT_NAME}_INCLUDE_DIRS \"${${subprj_name}_INCLUDE_DIRS}\" \${${PROJECT_NAME}_INCLUDE_DIRS} )
 set(${PROJECT_NAME}_LIBRARIES \${${PROJECT_NAME}_LIBRARIES} \"${${subprj_name}_LIBRARIES}\" )
-if ( WIN32 )
-	set(${PROJECT_NAME}_RUN_LIBRARIES \${${PROJECT_NAME}_RUN_LIBRARIES} \"${${subprj_name}_RUN_LIBRARIES}\" )
-endif ( WIN32 )	
 
 		")
 		
