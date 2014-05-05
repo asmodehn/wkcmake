@@ -78,7 +78,7 @@ macro(WkAddCFlags Build)
 		    SET(${PROJECT_NAME}_C_FLAGS_RELEASE "${${PROJECT_NAME}_C_FLAGS_RELEASE} ${ARGN}" CACHE STRING " ${PROJECT_NAME} Flags used by the C compiler during release builds." FORCE)
 		ENDIF( NOT already_stored)
 	ENDIF (${Build} STREQUAL All )
-endmacro(WkSetCFlags )
+endmacro(WkAddCFlags )
 
 # Usage : WkSetCXXFlags( Build [flags] )
 
@@ -116,7 +116,7 @@ macro(WkAddCXXFlags Build)
 		    SET(${PROJECT_NAME}_CXX_FLAGS_RELEASE "${${PROJECT_NAME}_CXX_FLAGS_RELEASE} ${ARGN}" CACHE STRING " ${PROJECT_NAME} Flags used by the C compiler during release builds." FORCE)
 		ENDIF( NOT already_stored)
 	ENDIF (${Build} STREQUAL All )
-endmacro(WkSetCFlags )
+endmacro(WkAddCXXFlags )
 
 # Usage : WkSetExeLinkerFlags( Build [flags] )
 
