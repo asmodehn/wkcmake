@@ -28,11 +28,11 @@
  *
  */
 
-#include "ProjectC2/headerC2.h"
+#include "ProjectC1/headerC1.h"
 
 #include <stdio.h>
 
-int C2_display()
+int C1_display()
 {
     WkDebug();
     return 0;

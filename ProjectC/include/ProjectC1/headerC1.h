@@ -1,5 +1,5 @@
-#ifndef PROJECTC_H
-#define PROJECTC_H
+#ifndef PROJECTC1_H
+#define PROJECTC1_H
 
 /**
  *  Copyright (c) 2009, Asmodehn's Corp.
@@ -47,4 +47,4 @@ extern "C"
 }
 #endif
 
-#endif /* PROJECTC_H */
+#endif /* PROJECTC1_H */
