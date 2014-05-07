@@ -1,3 +1,6 @@
+#ifndef PROJECTC_H
+#define PROJECTC_H
+
 /**
  *  Copyright (c) 2009, Asmodehn's Corp.
  *  All rights reserved.
@@ -28,42 +31,20 @@
  *
  */
 
-#include "ProjectC1/headerC1.h"
-#include "ProjectC2/headerC2.h"
+/* This should always be the first of your include statements */
+#include "WkPlatform_ProjectC.h"
 
-#include <stdio.h>
-#include <dlfcn.h>
-
-int main ( int argc, char* argv[] )
+/* Set up for C function definitions, even when using C++ */
+#ifdef __cplusplus
+extern "C"
 {
-    void* library;
-    int (*C3_display)();
-    char *err;
+#endif
 
-    C1_display("test C1");
-    C2_display("test C2");
+    WK_ProjectC_API int C3_display();
 
-    // Open the libC3 shared library
-    library = dlopen("libC3.so", RTLD_NOW);
-    if (!library) {
-        /* handle error, the module wasn't found */
-        fputs (dlerror(), stderr);
-        return 1;
-    }
-
-    dlerror(); /* clear error code */
-    // Get the loadFilter function, for loading objects
-    C3_display = dlsym(library, "C3_display");
-    if ((err = dlerror()) != NULL) {
-        /* handle error, the symbol wasn't found */
-        fputs (err, stderr);
-        dlclose(library);
-        return -1;
-    } else {
-    /* symbol found, its value is in s */
-
-        (*C3_display)("test C3");
-    }
-
-    dlclose(library);
+    /* Ends C function definitions when using C++ */
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* PROJECTC_H */

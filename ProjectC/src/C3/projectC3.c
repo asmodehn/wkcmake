@@ -28,42 +28,12 @@
  *
  */
 
-#include "ProjectC1/headerC1.h"
-#include "ProjectC2/headerC2.h"
+#include "ProjectC3/headerC3.h"
 
 #include <stdio.h>
-#include <dlfcn.h>
 
-int main ( int argc, char* argv[] )
+int C3_display()
 {
-    void* library;
-    int (*C3_display)();
-    char *err;
-
-    C1_display("test C1");
-    C2_display("test C2");
-
-    // Open the libC3 shared library
-    library = dlopen("libC3.so", RTLD_NOW);
-    if (!library) {
-        /* handle error, the module wasn't found */
-        fputs (dlerror(), stderr);
-        return 1;
-    }
-
-    dlerror(); /* clear error code */
-    // Get the loadFilter function, for loading objects
-    C3_display = dlsym(library, "C3_display");
-    if ((err = dlerror()) != NULL) {
-        /* handle error, the symbol wasn't found */
-        fputs (err, stderr);
-        dlclose(library);
-        return -1;
-    } else {
-    /* symbol found, its value is in s */
-
-        (*C3_display)("test C3");
-    }
-
-    dlclose(library);
+    WkDebug();
+    return 0;
 }

@@ -156,8 +156,23 @@ MACRO(WkTestBuild test_name)
 		
 			#build
 			ADD_EXECUTABLE(${test_name} ${testsource} )
-			TARGET_LINK_LIBRARIES(${test_name} ${PROJECT_NAME})
-			ADD_DEPENDENCIES(${test_name} ${PROJECT_NAME})
+			foreach(targetlib ${${PROJECT_NAME}_LIBRARY})
+				get_target_property(targetlib_type ${targetlib} TYPE)
+				if (NOT targetlib_type STREQUAL MODULE_LIBRARY)
+					TARGET_LINK_LIBRARIES(${test_name} ${targetlib})
+					ADD_DEPENDENCIES(${test_name} ${targetlib})
+				endif (NOT targetlib_type STREQUAL MODULE_LIBRARY)
+
+				#We need to move project libraries and dependencies to the test target location after build.
+				#We need to do that everytime to make sure we have the latest version
+				#TODO : Chek if we still need this ? CMake seems to have changed (check RUNTIME_OUTPUT_PATH)
+				if ( ${targetlib_type} STREQUAL "SHARED_LIBRARY" OR ${targetlib_type} STREQUAL "MODULE_LIBRARY")
+					ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${targetlib}>" "$<TARGET_FILE_DIR:${test_name}>"
+															COMMENT "Copying $<TARGET_FILE:${targetlib}> to $<TARGET_FILE_DIR:${test_name}>"
+															VERBATIM )
+				endif ( ${targetlib_type} STREQUAL "SHARED_LIBRARY" OR ${targetlib_type} STREQUAL "MODULE_LIBRARY")
+
+			endforeach()
 			
 			#Analyse test if analysing project
 			# done by target introspection -> needs to be declared after target definition
@@ -165,15 +180,6 @@ MACRO(WkTestBuild test_name)
 				Add_WKCMAKE_Cppcheck_target(${PROJECT_NAME}_${test_name}_analysis ${PROJECT_NAME}_${test_name} "${${PROJECT_NAME}_TEST_DIR}/${test_name}-cppcheck.xml")
 			ENDIF ( ${PROJECT_NAME}_CODE_ANALYSIS )
 
-			#We need to move project libraries and dependencies to the test target location after build.
-			#We need to do that everytime to make sure we have the latest version
-			
-			if ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
-				ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PROJECT_NAME}>" "$<TARGET_FILE_DIR:${test_name}>"
-														COMMENT "Copying $<TARGET_FILE:${PROJECT_NAME}> to $<TARGET_FILE_DIR:${test_name}>"
-														VERBATIM )
-			endif ( ${${PROJECT_NAME}_TYPE} STREQUAL "SHARED_LIBRARY" OR ${${PROJECT_NAME}_TYPE} STREQUAL "MODULE_LIBRARY")
-			
 			message ( STATUS "== Detected binary dependencies for ${test_name} : ${${PROJECT_NAME}_BINDEPENDS}" )
 			message ( STATUS "== Detected source dependencies for ${test_name} : ${${PROJECT_NAME}_SRCDEPENDS}" )
 			#if win32, moving all dependencies' run libraries

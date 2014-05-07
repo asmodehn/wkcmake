@@ -36,8 +36,12 @@ WkCMakeDir ( CMake )
 WkProject( ProjectC C )
 
 #build rules for the project
-WkBuild( LIBRARY SHARED )
+WkLibraryBuild( ProjectC1 STATIC "src/C1" )
+WkLibraryBuild( ProjectC2 SHARED "src/C2" )
+WkLibraryBuild( ProjectC3 MODULE "src/C3" )
+
+WkExportConfig(ProjectC1 ProjectC2 ProjectC3)
 
 #Testing
 WkTestBuild( maintestC )
-WkTestRun( ProjectC maintestC )
+WkTestRun( C1 C2 C3 maintestC )
