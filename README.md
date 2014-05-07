@@ -1,4 +1,4 @@
-wkcmake
+WkCmake
 =======
 
 WkCMake is aimed at simplifying CMake builds by making some assumptions :
