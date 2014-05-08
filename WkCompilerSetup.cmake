@@ -351,37 +351,3 @@ macro ( WkCompilerSetup )
 endmacro ( WkCompilerSetup )
 
 
-
-
-#setting target properties (replacing defaults from wkcmake - but not defaults from cmake )
-#WkTargetBuildOptions ( target_name build_type compile_flags [link_flags] )
-macro (WkTargetBuildOptions target_name build_type compile_flags )
-    string ( REGEX MATCH "${build_type}" BUILD_TYPE_MATCH "${CMAKE_CONFIGURATION_TYPES};All" )
-    #to get optional link_flags
-    if ( ${ARGC} GREATER 3 )
-        set(link_flags ${ARGV3})
-    endif ( ${ARGC} GREATER 3 )
-    #here we assume buildtype is correct
-
-	IF ( BUILD_TYPE_MATCH )
-        if ( ${PROJECT_NAME}_C_COMPILER_LOADED )
-            WkSetCFlags( ${build_type} ${compile_flags} )
-            #TODO : per target version of these. pb : defining option on target before target is defined ?
-        endif ()
-        if ( ${PROJECT_NAME}_CXX_COMPILER_LOADED )
-            WkSetCXXFlags( ${build_type} ${compile_flags} )
-        endif ()
-        if ( link_flags )
-	       	get_target_property(${PROJECT_NAME}_TYPE ${PROJECT_NAME} TYPE)
-   		    if ( ${PROJECT_NAME}_TYPE STREQUAL "EXECUTABLE" )
-		    	WkSetExeLinkerFlags( ${build_type} ${link_flags} )
-		    elseif ( ${PROJECT_NAME}_TYPE STREQUAL "SHARED_LIBRARY" )
-		    	WkSetSharedLinkerFlags( ${build_type} ${link_flags} )
-            elseif( ${PROJECT_NAME}_TYPE STREQUAL "MODULE_LIBRARY" )
-		    	WkSetModuleLinkerFlags( ${build_type} ${link_flags} )
-            endif()
-        endif ( link_flags )
-    ENDIF ( BUILD_TYPE_MATCH )
-endmacro (WkTargetBuildOptions)
-
-
