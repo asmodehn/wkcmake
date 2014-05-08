@@ -48,6 +48,7 @@ WkTestDataDir ( "Custom Test Data" )
 #Build rules
 #This depends is external. That means it should be built previously by another method.
 #Also that project will NOT be included as part of the final solution.
+# But the dependent project's library list and the include folder must be propagated
 WkDepends( "ProjectC" REQUIRED )
 
 WkBuild( LIBRARY SHARED )
