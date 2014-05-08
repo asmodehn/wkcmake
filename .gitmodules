@@ -1,0 +1,4 @@
+[submodule "ProjectC/CMake"]
+	path = ProjectC/CMake
+	url = git@github.com:asmodehn/wkcmake.git
+	branch = master
