@@ -37,8 +37,13 @@ int B_display()
     WkDebug();
 
     printf("\nProject Dependency : \n");
-    C_display();
-	Dsub_display();
-	Esub_display();
+    C1_display();
+    C2_display();
     return 0;
 }
+
+int main ( int argc, char* argv[] )
+{
+    return B_display("exe run !");
+}
+

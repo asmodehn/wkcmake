@@ -36,7 +36,6 @@ WkCMakeDir( "Custom CMake" )
 WkProject( ProjectB C )
 
 #Configuration of custom directories
-WkSrcDir ( "Custom Src" )
 WkIncludeDir ( "Custom Include" )
 WkBinDir ( "Custom Bin" )
 WkLibDir ( "Custom Lib" )
@@ -51,7 +50,7 @@ WkTestDataDir ( "Custom Test Data" )
 # But the dependent project's library list and the include folder must be propagated
 WkDepends( "ProjectC" REQUIRED )
 
-WkBuild( LIBRARY SHARED )
+WkBuild( EXECUTABLE "Custom Src" )
 
 #Testing
 WkTestBuild( maintestB )

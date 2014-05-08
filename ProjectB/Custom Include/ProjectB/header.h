@@ -35,9 +35,8 @@
 #include "WkPlatform_ProjectB.h"
 
 /*We are depending on projectC, projectDsub and projectEsub */
-#include "ProjectC/header.h"
-#include "ProjectDsub/header.h"
-#include "ProjectEsub/header.h"
+#include "ProjectC1/headerC1.h"
+#include "ProjectC2/headerC2.h"
 
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
