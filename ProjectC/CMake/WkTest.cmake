@@ -210,19 +210,25 @@ ENDMACRO(WkTestBuild test_name)
 # to the binary_path, at the root
 #
 MACRO (WkTestData test_name )
+	IF(${PROJECT_NAME}_ENABLE_TESTS)
+		foreach ( test_data ${ARGN} )
+		
+			# warning : tests are run from the project root...
+			#FILE(TO_NATIVE_PATH ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data} ${test_data}_NATIVE_SRC_PATH)
+			#FILE(TO_NATIVE_PATH ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data} ${test_data}_NATIVE_BLD_PATH)
+			#ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${${test_data}_NATIVE_SRC_PATH}" "${${test_data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${test_data}_NATIVE_SRC_PATH} to ${${test_data}_NATIVE_BLD_PATH}" VERBATIM)
+			ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
+				"${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}"
+				"${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}"
+				COMMENT
+				"Copying ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data} to ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}"
+				VERBATIM)
 
-	foreach ( test_data ${ARGN} )
-		
-		# warning : tests are run from the project root...
-		FILE(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}" ${test_data}_NATIVE_SRC_PATH)
-		FILE(TO_NATIVE_PATH "${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}" ${test_data}_NATIVE_BLD_PATH)
-		ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${${test_data}_NATIVE_SRC_PATH}" "${${test_data}_NATIVE_BLD_PATH}" COMMENT "Copying ${${test_data}_NATIVE_SRC_PATH} to ${${test_data}_NATIVE_BLD_PATH}" )
-		
-		#message ("test data src: ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}")
-		#message ("test data dest: ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}")
+			#message ("test data src: ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_DATA_DIR}/${test_data}")
+			#message ("test data dest: ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_TEST_DATA_BUILD_DIR}/${test_data}")
 	
-	endforeach ( test_data ${ARGN} )
-	
+		endforeach ( test_data ${ARGN} )
+	ENDIF(${PROJECT_NAME}_ENABLE_TESTS)
 ENDMACRO (WkTestData data_path)
 
 #

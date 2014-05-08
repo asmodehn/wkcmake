@@ -391,8 +391,8 @@ endmacro(WkLibraryBuild)
 #with same Language as Project and implicit dependency as the main build target
 # and also with same doc, tests, etc.
 # only source files and include directories are different
-# WkLibraryBuild ( target_name load_type source_dir)
-macro (WkExecutableBuild target_name )
+# WkExecutableBuild ( target_name source_dir )
+macro (WkExecutableBuild target_name source_dir )
 CMAKE_POLICY(PUSH)
 CMAKE_POLICY(VERSION 2.6)
 
@@ -400,6 +400,9 @@ CMAKE_POLICY(VERSION 2.6)
 	if ( NOT CMAKE_MODULE_PATH )
 		set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/${${PROJECT_NAME}_DIR}/Modules/")
 	endif ( NOT CMAKE_MODULE_PATH )
+
+	#parsing extra arguments
+	set(${target_name}_SRC_DIR "${source_dir}" )
 
 	#Setting up project structure defaults for directories
 	# Note that if these have been already defined with the same macros, the calls here wont have any effect ( wont changed cached value )
@@ -471,17 +474,13 @@ CMAKE_POLICY(VERSION 2.6)
 
 	#storing a variable for top project to be able to link it
 	if ( ${PROJECT_NAME}_LIBRARY AND NOT "${${PROJECT_NAME}_LIBRARY}" STREQUAL "")
-		STRING(FIND ${${PROJECT_NAME}_LIBRARY} ${target_name} already_stored)
-		IF( NOT already_stored)
+		LIST(FIND ${PROJECT_NAME}_LIBRARY ${target_name} already_stored)
+		IF( already_stored LESS 0)
 			set(${PROJECT_NAME}_LIBRARY ${${PROJECT_NAME}_LIBRARY} ${target_name} CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library" FORCE)
-		ENDIF(NOT already_stored)
+		ENDIF( already_stored LESS 0)
 	else()
 		set(${PROJECT_NAME}_LIBRARY "${target_name}" CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library")
 	endif()
-
-	if ( ${${target_name}_load_type} STREQUAL "SHARED" )
-		set_target_properties(${target_name} PROPERTIES DEFINE_SYMBOL "WK_${PROJECT_NAME}_${target_name}_SHAREDLIB_BUILD")
-	endif ( ${${target_name}_load_type} STREQUAL "SHARED" )
 
 	if ( EXISTS ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} )
 		ADD_CUSTOM_COMMAND( 
