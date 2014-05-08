@@ -40,6 +40,9 @@ int A_display(std::string txt)
     WkDebug();
 
     printf("\nProject Dependency : \n");
-    B_display();
+    // B is executable and not linked here
+    //B_display();
+    C1_display();
+    C2_display();
     return 0;
 }
