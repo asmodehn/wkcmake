@@ -347,10 +347,10 @@ CMAKE_POLICY(VERSION 2.6)
 
 	#storing a variable for top project to be able to link it
 	if ( ${PROJECT_NAME}_LIBRARY AND NOT "${${PROJECT_NAME}_LIBRARY}" STREQUAL "")
-		LIST(FIND "${${PROJECT_NAME}_LIBRARY}" ${target_name} already_stored)
-		IF( NOT already_stored)
+		LIST(FIND ${PROJECT_NAME}_LIBRARY ${target_name} already_stored)
+		IF( already_stored LESS 0)
 			set(${PROJECT_NAME}_LIBRARY ${${PROJECT_NAME}_LIBRARY} ${target_name} CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library" FORCE)
-		ENDIF(NOT already_stored)
+		ENDIF( already_stored LESS 0)
 	else()
 		set(${PROJECT_NAME}_LIBRARY "${target_name}" CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library")
 	endif()
