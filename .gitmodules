@@ -6,3 +6,7 @@
 	path = ProjectB/Custom CMake
 	url = git@github.com:asmodehn/wkcmake.git
 	branch = master
+[submodule "ProjectA/CMake"]
+	path = ProjectA/CMake
+	url = git@github.com:asmodehn/wkcmake.git
+	branch = master
