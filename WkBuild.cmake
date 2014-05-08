@@ -309,7 +309,7 @@ CMAKE_POLICY(VERSION 2.6)
 	#globbing source files
 	message ( STATUS "== Gathering source files for ${PROJECT_NAME}_${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR}..." )
 	
-	FILE(GLOB_RECURSE ${target_name}_HEADERS RELATIVE "${PROJECT_SOURCE_DIR}"
+	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_HEADERS RELATIVE "${PROJECT_SOURCE_DIR}"
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.h 
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hh 
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hpp 
@@ -317,7 +317,7 @@ CMAKE_POLICY(VERSION 2.6)
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hh 
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hpp
 	)
-	FILE(GLOB_RECURSE ${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
+	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.c
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cpp
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cc
