@@ -202,37 +202,43 @@ endmacro(WkFinConfig )
 macro (WkBuild project_type)
 CMAKE_POLICY(PUSH)
 CMAKE_POLICY(VERSION 2.6)
-	WkSrcDir("src")
+
 	message(AUTHOR_WARNING "WkBuild is deprecated. Please use WkLibraryBuild or WkExecutableBuild instead.")
+
+	#To keep backward compatible default
+	if (NOT ${PROJECT_NAME}_SRC_DIR)
+		set(${PROJECT_NAME}_SRC_DIR "src" )
+	endif (NOT ${PROJECT_NAME}_SRC_DIR)
+
 	if ( ${project_type} STREQUAL EXECUTABLE )
-		if ( ${ARGC} GREATER 1 AND EXISTS ${ARGV1} AND IS_DIRECTORY ${ARGV1} )
+		if ( ${ARGC} GREATER 1 AND EXISTS "${ARGV1}" AND IS_DIRECTORY "${ARGV1}" )
 			if (${PROJECT_NAME}_SRC_DIR)
 				message(WARNING "${ARGV1} will override ${${PROJECT_NAME}_SRC_DIR} as source directory for ${PROJECT_NAME}")
 			endif(${PROJECT_NAME}_SRC_DIR)
 			set(${PROJECT_NAME}_SRC_DIR ${ARGV1} )
-		endif ( ${ARGC} GREATER 1 AND EXISTS ${ARGV1} AND IS_DIRECTORY ${ARGV1} )
-		message(STATUS "Using default Source directory : ${${PROJECT_NAME}_SRC_DIR} ")
+		endif ( ${ARGC} GREATER 1 AND EXISTS "${ARGV1}" AND IS_DIRECTORY "${ARGV1}" )
+		message(STATUS "Using Source directory : ${${PROJECT_NAME}_SRC_DIR} ")
 		WkExecutableBuild(${PROJECT_NAME} ${${PROJECT_NAME}_SRC_DIR})
 	elseif ( ${project_type} STREQUAL LIBRARY )
 		if ( ${ARGC} GREATER 1 )
 			if ( ${ARGV1} STREQUAL STATIC OR ${ARGV1} STREQUAL SHARED OR ${ARGV1} STREQUAL MODULE )
 				set(${PROJECT_NAME}_load_type ${ARGV1} )
 				if ( ${ARGC} GREATER 2)
-					if( EXISTS ${ARGV2} AND IS_DIRECTORY ${ARGV2} )
+					if( EXISTS "${ARGV2}" AND IS_DIRECTORY "${ARGV2}" )
 						if (${PROJECT_NAME}_SRC_DIR)
 							message(WARNING "${ARGV2} will override ${${PROJECT_NAME}_SRC_DIR} as source directory for ${PROJECT_NAME}")
 						endif(${PROJECT_NAME}_SRC_DIR)
 						set(${PROJECT_NAME}_SRC_DIR ${ARGV2} )
-					endif( EXISTS ${ARGV2} AND IS_DIRECTORY ${ARGV2} )
+					endif( EXISTS "${ARGV2}" AND IS_DIRECTORY "${ARGV2}" )
 				endif()
-			elseif ( EXISTS ${ARGV1} AND IS_DIRECTORY ${ARGV1} )
+			elseif ( EXISTS "${ARGV1}" AND IS_DIRECTORY "${ARGV1}" )
 				if (${PROJECT_NAME}_SRC_DIR)
 					message(WARNING "${ARGV1} will override ${${PROJECT_NAME}_SRC_DIR} as source directory for ${PROJECT_NAME}")
 				endif(${PROJECT_NAME}_SRC_DIR)
 				set(${PROJECT_NAME}_SRC_DIR ${ARGV1} )
 			endif ()
 		endif ( ${ARGC} GREATER 1 )
-		message(STATUS "Using default Source directory : ${${PROJECT_NAME}_SRC_DIR} ")
+		message(STATUS "Using Source directory : ${${PROJECT_NAME}_SRC_DIR} ")
 		WkLibraryBuild(${PROJECT_NAME} ${${PROJECT_NAME}_load_type} ${${PROJECT_NAME}_SRC_DIR})
 	else()
 		message(FATAL_ERROR "WkBuild called with project_type = ${project_type}. It can be either EXECUTABLE or LIBRARY.")
@@ -267,21 +273,21 @@ CMAKE_POLICY(VERSION 2.6)
 		     AND NOT ${ARGV1} STREQUAL "MODULE"
 		)
 			#assuming it s the source dir
-			set(${target_name}_SRC_DIR ${ARGV1} )
+			set(${PROJECT_NAME}_${target_name}_SRC_DIR ${ARGV1} )
 			if( WKCMAKE_SHARED_LIBS )
-				set(${target_name}_load_type "SHARED")
+				set(${PROJECT_NAME}_${target_name}_load_type "SHARED")
 			else( WKCMAKE_SHARED_LIBS )
-				set(${target_name}_load_type "STATIC")
+				set(${PROJECT_NAME}_${target_name}_load_type "STATIC")
 			endif( WKCMAKE_SHARED_LIBS )
 		else()
-			set(${target_name}_load_type ${ARGV1} )
+			set(${PROJECT_NAME}_${target_name}_load_type ${ARGV1} )
 			if ( ${ARGC} GREATER 2 )
-				set(${target_name}_SRC_DIR ${ARGV2} )
+				set(${PROJECT_NAME}_${target_name}_SRC_DIR ${ARGV2} )
 			endif ( ${ARGC} GREATER 2 )
 		endif()
 	endif ( ${ARGC} GREATER 1 )
 
-	message ( STATUS "== Configuring ${target_name} as LIBRARY ${${target_name}_load_type}" )	
+	message ( STATUS "== Configuring ${target_name} as LIBRARY ${${PROJECT_NAME}_${target_name}_load_type}" )	
 
 	#Setting up project structure defaults for directories
 	# Note that if these have been already defined with the same macros, the calls here wont have any effect ( wont changed cached value )
@@ -301,45 +307,45 @@ CMAKE_POLICY(VERSION 2.6)
 	WkPlatformConfigure()
 
 	#globbing source files
-	message ( STATUS "== Gathering source files for ${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${target_name}_SRC_DIR}..." )
+	message ( STATUS "== Gathering source files for ${PROJECT_NAME}_${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR}..." )
 	
 	FILE(GLOB_RECURSE ${target_name}_HEADERS RELATIVE "${PROJECT_SOURCE_DIR}"
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.h 
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hh 
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hpp 
-		${${target_name}_SRC_DIR}/*.h 
-		${${target_name}_SRC_DIR}/*.hh 
-		${${target_name}_SRC_DIR}/*.hpp
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.h 
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hh 
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hpp
 	)
 	FILE(GLOB_RECURSE ${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
-		${${target_name}_SRC_DIR}/*.c
-		${${target_name}_SRC_DIR}/*.cpp
-		${${target_name}_SRC_DIR}/*.cc
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.c
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cpp
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cc
 	)
-	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${target_name}_SRC_DIR} : ${${target_name}_HEADERS}" )
-	message ( STATUS "== Sources detected in ${${target_name}_SRC_DIR} : ${${target_name}_SOURCES}" )
+	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_HEADERS}" )
+	message ( STATUS "== Sources detected in ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_SOURCES}" )
 
 	# to show we are using WkCMake to build ( can be #ifdef in header )
 	add_definitions( -D WK_BUILD )
 
 	#TODO : find a simpler way than this complex merge...
-	MERGE("${${target_name}_HEADERS}" "${${target_name}_SOURCES}" ${target_name}_SOURCES)
+	MERGE("${${PROJECT_NAME}_${target_name}_HEADERS}" "${${PROJECT_NAME}_${target_name}_SOURCES}" ${PROJECT_NAME}_${target_name}_SOURCES)
 	#MESSAGE ( STATUS "== ${target_name} Sources : ${${target_name}_SOURCES}" )
 	
-	AddPlatformCheckSrc(${target_name}_SOURCES)
+	AddPlatformCheckSrc(${PROJECT_NAME}_${target_name}_SOURCES)
 
 	#Setting up AStyle target
-	WkTargetFormat(${target_name} ${${target_name}_SOURCES})
+	WkTargetFormat(${target_name} ${${PROJECT_NAME}_${target_name}_SOURCES})
 
 	#internal headers ( non visible by outside project )
-	include_directories("${PROJECT_SOURCE_DIR}/${${target_name}_SRC_DIR}")
+	include_directories("${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_${target_name}_SRC_DIR}")
 	
 	#Including configured headers (
 	#	-binary_dir/CMakeFiles for the configured header, 
 	#	-source_dir/include for the unmodified ones, 
 	include_directories("${PROJECT_BINARY_DIR}/CMakeFiles" "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}" )
 
-	add_library(${target_name} ${${target_name}_load_type} ${${target_name}_SOURCES})
+	add_library(${target_name} ${${PROJECT_NAME}_${target_name}_load_type} ${${PROJECT_NAME}_${target_name}_SOURCES})
 
 	#defining where to put what has been built
 	SET(${CMAKE_PROJECT_NAME}_LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${CMAKE_PROJECT_NAME}_LIB_DIR} CACHE PATH "Ouput directory for ${PROJECT_NAME} libraries." )
@@ -406,7 +412,7 @@ CMAKE_POLICY(VERSION 2.6)
 	endif ( NOT CMAKE_MODULE_PATH )
 
 	#parsing extra arguments
-	set(${target_name}_SRC_DIR "${source_dir}" )
+	set ( ${PROJECT_NAME}_${target_name}_SRC_DIR ${source_dir} CACHE PATH "Sources directory for ${PROJECT_NAME} ${target_name} " )
 
 	#Setting up project structure defaults for directories
 	# Note that if these have been already defined with the same macros, the calls here wont have any effect ( wont changed cached value )
@@ -428,46 +434,46 @@ CMAKE_POLICY(VERSION 2.6)
 	#globbing source files
 	message ( STATUS "== Gathering source files for ${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_INCLUDE_DIR} and ${${target_name}_SRC_DIR}..." )
 	
-	FILE(GLOB_RECURSE ${target_name}_HEADERS RELATIVE "${PROJECT_SOURCE_DIR}"
+	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_HEADERS RELATIVE "${PROJECT_SOURCE_DIR}"
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.h 
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hh 
 		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hpp 
 		${${PROJECT_NAME}_INCLUDE_DIR}/*.h 
 		${${PROJECT_NAME}_INCLUDE_DIR}/*.hh 
 		${${PROJECT_NAME}_INCLUDE_DIR}/*.hpp 
-		${${target_name}_SRC_DIR}/*.h 
-		${${target_name}_SRC_DIR}/*.hh 
-		${${target_name}_SRC_DIR}/*.hpp
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.h 
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hh 
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hpp
 	)
-	FILE(GLOB_RECURSE ${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
-		${${target_name}_SRC_DIR}/*.c
-		${${target_name}_SRC_DIR}/*.cpp
-		${${target_name}_SRC_DIR}/*.cc
+	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.c
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cpp
+		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cc
 	)
-	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${target_name}_SRC_DIR} : ${${target_name}_HEADERS}" )
-	message ( STATUS "== Sources detected in ${${target_name}_SRC_DIR} : ${${target_name}_SOURCES}" )
+	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_HEADERS}" )
+	message ( STATUS "== Sources detected in ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_SOURCES}" )
 
 	# to show we are using WkCMake to build ( can be #ifdef in header )
 	add_definitions( -D WK_BUILD )
 
 	#TODO : find a simpler way than this complex merge...
-	MERGE("${${target_name}_HEADERS}" "${${target_name}_SOURCES}" ${target_name}_SOURCES)
+	MERGE("${${PROJECT_NAME}_${target_name}_HEADERS}" "${${PROJECT_NAME}_${target_name}_SOURCES}" ${PROJECT_NAME}_${target_name}_SOURCES)
 	#MESSAGE ( STATUS "== ${PROJECT_NAME} Sources : ${SOURCES}" )
 	
-	AddPlatformCheckSrc(${target_name}_SOURCES)
+	AddPlatformCheckSrc(${PROJECT_NAME}_${target_name}_SOURCES)
 
 	#Setting up AStyle target
-	WkTargetFormat(${target_name} ${${target_name}_SOURCES})
+	WkTargetFormat(${target_name} ${${PROJECT_NAME}_${target_name}_SOURCES})
 
 	#internal headers ( non visible by outside project )
-	include_directories("${PROJECT_SOURCE_DIR}/${${target_name}_SRC_DIR}")
+	include_directories("${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_${target_name}_SRC_DIR}")
 	
 	#Including configured headers (
 	#	-binary_dir/CMakeFiles for the configured header, 
 	#	-source_dir/include for the unmodified ones, 
 	include_directories("${PROJECT_BINARY_DIR}/CMakeFiles" "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}" )
 
-	add_executable(${target_name} ${${target_name}_SOURCES})
+	add_executable(${target_name} ${${PROJECT_NAME}_${target_name}_SOURCES})
 
 	SET(${CMAKE_PROJECT_NAME}_RUNTIME_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${CMAKE_PROJECT_NAME}_BIN_DIR} CACHE PATH "Ouput directory for ${PROJECT_NAME} executables." )
 	mark_as_advanced(FORCE ${CMAKE_PROJECT_NAME}_RUNTIME_OUTPUT_PATH)
@@ -476,14 +482,18 @@ CMAKE_POLICY(VERSION 2.6)
 	# adding dependencies for cppcheck ( and format ) targets
 	WkTargetCppCheck(${PROJECT_NAME})
 
-	#storing a variable for top project to be able to link it
-	if ( ${PROJECT_NAME}_LIBRARY AND NOT "${${PROJECT_NAME}_LIBRARY}" STREQUAL "")
-		LIST(FIND ${PROJECT_NAME}_LIBRARY ${target_name} already_stored)
-		IF( already_stored LESS 0)
-			set(${PROJECT_NAME}_LIBRARY ${${PROJECT_NAME}_LIBRARY} ${target_name} CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library" FORCE)
-		ENDIF( already_stored LESS 0)
-	else()
-		set(${PROJECT_NAME}_LIBRARY "${target_name}" CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library")
+	#This is not needed for executable, unless ENABLE_EXPORTS is set
+	get_target_property(export_enabled ${target_name} ENABLE_EXPORTS)
+	if ( export_enabled )
+		#storing a variable for top project to be able to link it
+		if ( ${PROJECT_NAME}_LIBRARY AND NOT "${${PROJECT_NAME}_LIBRARY}" STREQUAL "")
+			LIST(FIND ${PROJECT_NAME}_LIBRARY ${target_name} already_stored)
+			IF( already_stored LESS 0)
+				set(${PROJECT_NAME}_LIBRARY ${${PROJECT_NAME}_LIBRARY} ${target_name} CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library" FORCE)
+			ENDIF( already_stored LESS 0)
+		else()
+			set(${PROJECT_NAME}_LIBRARY "${target_name}" CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library")
+		endif()
 	endif()
 
 	if ( EXISTS ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} )
@@ -589,14 +599,18 @@ macro (WkExportConfig target1 )
 	
 	WkGenConfig( ${target1} ${ARGN} )
 	
-	#Linking source dependencies, and modifying config files
-	foreach (sdep ${${PROJECT_NAME}_SRCDEPENDS} )
-		WkLinkSrcDepends( ${sdep} )
+	foreach ( tgt ${target1};${ARGN})
+		#Linking source dependencies, and modifying config files
+		foreach (sdep ${${PROJECT_NAME}_SRCDEPENDS} )
+			WkLinkSrcDepends( ${tgt} ${sdep} )
+		endforeach()
 	endforeach()
-	
-	#Linking binary dependencies, and modifying config files
-	foreach (bdep ${${PROJECT_NAME}_BINDEPENDS} )
-		WkLinkBinDepends( ${bdep} )
+
+	foreach ( tgt ${target1};${ARGN})
+		#Linking binary dependencies, and modifying config files
+		foreach (bdep ${${PROJECT_NAME}_BINDEPENDS} )
+			WkLinkBinDepends( ${tgt} ${bdep} )
+		endforeach()
 	endforeach()
 
 	WkFinConfig()

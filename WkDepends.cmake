@@ -193,7 +193,7 @@ endmacro (WkSrcDepends dir_name)
 # Joining Dependencies for build
 # They will all be forwarded to client projects
 #
-macro(WkLinkBinDepends package_name)
+macro(WkLinkBinDepends target package_name)
 	
 	SetPackageVarName( package_var_name ${package_name} )
 	#message ( "${package_name} -> ${package_var_name}" )
@@ -209,7 +209,24 @@ macro(WkLinkBinDepends package_name)
 			set ( ${package_var_name}_LIBRARIES ${${package_var_name}_LIBRARY} CACHE FILEPATH "${package_name} Libraries ")
 		endif ( NOT ${package_var_name}_LIBRARIES )
 
-		target_link_libraries(${PROJECT_NAME} ${${package_var_name}_LIBRARIES})
+		foreach(dpdlib ${${package_var_name}_LIBRARIES})
+			get_target_property(dpdlib_type ${dpdlib} TYPE)
+			if (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
+				TARGET_LINK_LIBRARIES(${target} ${dpdlib})
+				ADD_DEPENDENCIES(${target} ${dpdlib})
+			endif (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
+
+			#We need to move project libraries and dependencies to the test target location after build.
+			#We need to do that everytime to make sure we have the latest version
+			#TODO : Chek if we still need this ? CMake seems to have changed (check RUNTIME_OUTPUT_PATH)
+			if ( ${dpdlib_type} STREQUAL "SHARED_LIBRARY" OR ${dpdlib_type} STREQUAL "MODULE_LIBRARY")
+				ADD_CUSTOM_COMMAND( TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${dpdlib}>" "$<TARGET_FILE_DIR:${target}>"
+														COMMENT "Copying $<TARGET_FILE:${dpdlib}> to $<TARGET_FILE_DIR:${target}>"
+														VERBATIM )
+			endif ( ${dpdlib_type} STREQUAL "SHARED_LIBRARY" OR ${dpdlib_type} STREQUAL "MODULE_LIBRARY")
+
+		endforeach()
+
 		message ( STATUS "== Binary Dependency ${package_name} libs : ${${package_var_name}_LIBRARIES} OK !")
 
 		#using fullpath libraries from here on
@@ -263,13 +280,30 @@ endmacro(WkLinkBinDepends package_name)
 # Joining Dependencies for build
 # They will all be forwarded to client projects
 #
-macro(WkLinkSrcDepends subprj_name)
+macro(WkLinkSrcDepends target subprj_name)
 	
 	if ( ${subprj_name}_LIBRARY )
 
 		set ( ${subprj_name}_LIBRARIES ${${subprj_name}_LIBRARY} CACHE FILEPATH "${subprj_name} Libraries ")
-			
-		target_link_libraries(${PROJECT_NAME} ${${subprj_name}_LIBRARIES})
+		
+		foreach(dpdlib ${${package_var_name}_LIBRARIES})
+			get_target_property(dpdlib_type ${dpdlib} TYPE)
+			if (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
+				TARGET_LINK_LIBRARIES(${target} ${dpdlib})
+				ADD_DEPENDENCIES(${target} ${dpdlib})
+			endif (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
+
+			#We need to move project libraries and dependencies to the test target location after build.
+			#We need to do that everytime to make sure we have the latest version
+			#TODO : Chek if we still need this ? CMake seems to have changed (check RUNTIME_OUTPUT_PATH)
+			if ( ${dpdlib_type} STREQUAL "SHARED_LIBRARY" OR ${dpdlib_type} STREQUAL "MODULE_LIBRARY")
+				ADD_CUSTOM_COMMAND( TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${dpdlib}>" "$<TARGET_FILE_DIR:${target}>"
+														COMMENT "Copying $<TARGET_FILE:${dpdlib}> to $<TARGET_FILE_DIR:${target}>"
+														VERBATIM )
+			endif ( ${dpdlib_type} STREQUAL "SHARED_LIBRARY" OR ${dpdlib_type} STREQUAL "MODULE_LIBRARY")
+
+		endforeach()
+
 		message ( STATUS "== Source Dependency ${subprj_name} libs : ${${subprj_name}_LIBRARIES} OK !")
 		
 		# Once the project is built with it, the dependency becomes mandatory
