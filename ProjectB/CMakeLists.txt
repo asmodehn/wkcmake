@@ -40,23 +40,15 @@ WkSrcDir ( "Custom Src" )
 WkIncludeDir ( "Custom Include" )
 WkBinDir ( "Custom Bin" )
 WkLibDir ( "Custom Lib" )
-WkDataDir ( "Custom Data")
+WkDataDir ( "Custom Data" )
 WkTestDir ( "Custom Test" )
 WkDocDir ( "Custom Doc" )
-WkTestDataDir ( "Custom Test Data")
+WkTestDataDir ( "Custom Test Data" )
 
 #Build rules
 #This depends is external. That means it should be built previously by another method.
 #Also that project will NOT be included as part of the final solution.
-WkDepends( "ProjectC" REQUIRED)
-
-#These two depends are internal (contained inside a subdirectory).
-# One can be binary depends ( same use case as an external depends, that is always a binary depends )
-WkDepends("Custom Depend/ProjectDsub_bin/build" REQUIRED)
-
-# One can be source depends. That means it will be build if necessary by the current project.
-#Therefore that project will be included as part of the final solution.
-WkDepends("Custom Depend/ProjectEsub_src" REQUIRED)
+WkDepends( "ProjectC" REQUIRED )
 
 WkBuild( LIBRARY SHARED )
 
