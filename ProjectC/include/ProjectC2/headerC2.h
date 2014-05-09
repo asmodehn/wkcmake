@@ -40,7 +40,7 @@ extern "C"
 {
 #endif
 
-    WK_ProjectC_API int C2_display();
+    WK_ProjectC_ProjectC2_API int C2_display();
 
     /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
