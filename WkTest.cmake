@@ -156,6 +156,9 @@ MACRO(WkTestBuild test_name)
 		
 			#build
 			ADD_EXECUTABLE(${test_name} ${testsource} )
+			
+			WkTargetSetProperties(${test_name})
+			
 			foreach(targetlib ${${PROJECT_NAME}_LIBRARY})
 				get_target_property(targetlib_type ${targetlib} TYPE)
 				if (NOT targetlib_type STREQUAL MODULE_LIBRARY)
