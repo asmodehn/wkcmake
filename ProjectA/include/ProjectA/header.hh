@@ -41,7 +41,7 @@ extern "C"
 {
 #endif
 
-    WK_ProjectA_API int A_display(std::string txt);
+    WK_ProjectA_ProjectA_API int A_display(std::string txt);
 
     /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
