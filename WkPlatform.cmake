@@ -195,6 +195,46 @@ macro(WkPlatformConfigure)
 	set ( CMAKEDEFINE "#cmakedefine")
 	# This configure replaces all @PROJECT_NAME@ with the actual project name to make sure all defined macros are unique in the project tree
 	configure_file(${WKCMAKE_DIR}/WkPlatform.h.config ${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.h.in @ONLY)
+	
+	#This defines the export type for library builds
+	SET(WK_${PROJECT_NAME}_LIBS_EXPORT_TYPE "")
+	SET(WK_${PROJECT_NAME}_LIBS_EXPORT_WKDEBUG "")
+	foreach ( lib ${${PROJECT_NAME}_LIBRARY})
+		message ( STATUS "${lib}" )
+		get_target_property(${PROJECT_NAME}_${lib}_TYPE ${lib} TYPE)
+		message ( STATUS "${${PROJECT_NAME}_${lib}_TYPE}" )
+		if ( ${PROJECT_NAME}_${lib}_TYPE STREQUAL "SHARED_LIBRARY" )
+			SET(WK_${PROJECT_NAME}_LIBS_EXPORT_TYPE "${WK_${PROJECT_NAME}_LIBS_EXPORT_TYPE}
+#ifdef WK_${PROJECT_NAME}_${lib}_SHAREDLIB_IMPORT /* defined if we import the library (instead of building it) */
+#define WK_${PROJECT_NAME}_${lib}_API WK_${PROJECT_NAME}_HELPER_DLL_IMPORT
+#else
+#define WK_${PROJECT_NAME}_${lib}_API WK_${PROJECT_NAME}_HELPER_DLL_EXPORT
+#endif /* WK_${PROJECT_NAME}_${lib}_SHAREDLIB_IMPORT */
+#define WK_${PROJECT_NAME}_${lib}_LOCAL WK_${PROJECT_NAME}_HELPER_DLL_LOCAL
+"
+			)
+			SET(WK_${PROJECT_NAME}_LIBS_EXPORT_WKDEBUG "${WK_${PROJECT_NAME}_LIBS_EXPORT_WKDEBUG}
+/* Basic C function to display Wk Configuration on runtime */
+WK_${PROJECT_NAME}_${lib}_LOCAL int WkDebug();
+"
+			)			
+		elseif ( ${PROJECT_NAME}_${lib}_TYPE STREQUAL "STATIC_LIBRARY" )
+			SET(WK_${PROJECT_NAME}_LIBS_EXPORT_TYPE "${WK_${PROJECT_NAME}_LIBS_EXPORT_TYPE}
+#define WK_${PROJECT_NAME}_${lib}_API
+#define WK_${PROJECT_NAME}_${lib}_LOCAL
+"
+			)
+			SET(WK_${PROJECT_NAME}_LIBS_EXPORT_WKDEBUG "${WK_${PROJECT_NAME}_LIBS_EXPORT_WKDEBUG}
+/* Basic C function to display Wk Configuration on runtime */
+WK_${PROJECT_NAME}_${lib}_LOCAL int WkDebug();
+"
+			)
+		else()
+			#TODO deal with module library
+		endif()
+	endforeach()
+	
+	
 	# This configure replaces all variables in the file with ${} with CMAKE ones, as usual in CMake...
 	configure_file(${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.h.in ${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.h )
 	configure_file(${WKCMAKE_DIR}/WkPlatform.c.config ${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.c )

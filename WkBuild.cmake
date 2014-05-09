@@ -303,9 +303,6 @@ CMAKE_POLICY(VERSION 2.6)
 	#configuration depending on build type
 	WkBuildTypeConfig()
 
-	#generating configured Header for detected packages
-	WkPlatformConfigure()
-
 	#globbing source files
 	message ( STATUS "== Gathering source files for ${PROJECT_NAME}_${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR}..." )
 	
@@ -365,10 +362,6 @@ CMAKE_POLICY(VERSION 2.6)
 		set(${PROJECT_NAME}_LIBRARY "${target_name}" CACHE FILEPATH "${PROJECT_NAME} ${target_name} Library")
 	endif()
 
-	if ( ${${target_name}_load_type} STREQUAL "SHARED" )
-		set_target_properties(${target_name} PROPERTIES DEFINE_SYMBOL "WK_${PROJECT_NAME}_${target_name}_SHAREDLIB_BUILD")
-	endif ( ${${target_name}_load_type} STREQUAL "SHARED" )
-
 	if ( EXISTS ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} )
 		ADD_CUSTOM_COMMAND( 
 			TARGET ${target_name}
@@ -382,6 +375,9 @@ CMAKE_POLICY(VERSION 2.6)
 		message ( WARNING "Headers for ${target_name} cannot be copied !" )
 	endif()
 
+	#generating configured Header for detected packages and lib export definition
+	WkPlatformConfigure()
+	
 	WkTargetSetProperties (${target_name})
 
 	#
@@ -427,9 +423,6 @@ CMAKE_POLICY(VERSION 2.6)
 
 	#configuration depending on build type
 	WkBuildTypeConfig()
-
-	#generating configured Header for detected packages
-	WkPlatformConfigure()
 
 	#globbing source files
 	message ( STATUS "== Gathering source files for ${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_INCLUDE_DIR} and ${${target_name}_SRC_DIR}..." )
@@ -511,6 +504,9 @@ CMAKE_POLICY(VERSION 2.6)
 
 	WkTargetSetProperties (${target_name})
 
+	#generating configured Header for detected packages and lib export definition
+	WkPlatformConfigure()
+	
 	#
 	# Copying data directory after build ( for use by project later )
 	#
@@ -563,22 +559,22 @@ macro (WkTargetSetProperties target_name )
 			set_target_properties( ${target_name} PROPERTIES COMPILE_FLAGS "${${PROJECT_NAME}_CXX_FLAGS} ${${PROJECT_NAME}_CXX_FLAGS_RELEASE}" )
 		endif()
 	endif()
-	get_target_property(${PROJECT_NAME}_TYPE ${target_name} TYPE)
-	if ( ${PROJECT_NAME}_TYPE STREQUAL "SHARED_LIBRARY" )
+	get_target_property(${PROJECT_NAME}_${target_name}_TYPE ${target_name} TYPE)
+	if ( ${PROJECT_NAME}_${target_name}_TYPE STREQUAL "SHARED_LIBRARY" )
 		set_target_properties( ${target_name} PROPERTIES LINK_FLAGS "${${PROJECT_NAME}_SHARED_LINKER_FLAGS}" )
 		if ( ${PROJECT_NAME}_BUILD_TYPE STREQUAL "Debug" )
 			set_target_properties( ${target_name} PROPERTIES LINK_FLAGS_DEBUG "${${PROJECT_NAME}_SHARED_LINKER_FLAGS_DEBUG}" )
 		elseif ( ${PROJECT_NAME}_BUILD_TYPE STREQUAL "Release" )
 			set_target_properties( ${target_name} PROPERTIES LINK_FLAGS_RELEASE "${${PROJECT_NAME}_SHARED_LINKER_FLAGS_RELEASE}" )
 		endif()
-	elseif( ${PROJECT_NAME}_TYPE STREQUAL "MODULE_LIBRARY" )
+	elseif( ${PROJECT_NAME}_${target_name}_TYPE STREQUAL "MODULE_LIBRARY" )
 		set_target_properties( ${target_name} PROPERTIES LINK_FLAGS "${${PROJECT_NAME}_MODULE_LINKER_FLAGS}" )
 		if ( ${PROJECT_NAME}_BUILD_TYPE STREQUAL "Debug" )
 			set_target_properties( ${target_name} PROPERTIES LINK_FLAGS_DEBUG "${${PROJECT_NAME}_MODULE_LINKER_FLAGS_DEBUG}" )
 		elseif ( ${PROJECT_NAME}_BUILD_TYPE STREQUAL "Release" )
 			set_target_properties( ${target_name} PROPERTIES LINK_FLAGS_RELEASE "${${PROJECT_NAME}_MODULE_LINKER_FLAGS_RELEASE}" )
 		endif()
-	elseif( ${PROJECT_NAME}_TYPE STREQUAL "EXECUTABLE" )
+	elseif( ${PROJECT_NAME}_${target_name}_TYPE STREQUAL "EXECUTABLE" )
 		if ( ${PROJECT_NAME}_BUILD_TYPE STREQUAL "Debug" )
 			set_target_properties( ${target_name} PROPERTIES LINK_FLAGS_DEBUG "${${PROJECT_NAME}_EXE_LINKER_FLAGS} ${${PROJECT_NAME}_EXE_LINKER_FLAGS_DEBUG}" )
 		elseif ( ${PROJECT_NAME}_BUILD_TYPE STREQUAL "Release" )

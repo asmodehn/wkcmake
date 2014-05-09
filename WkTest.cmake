@@ -179,17 +179,17 @@ MACRO(WkTestBuild test_name)
 			IF ( ${PROJECT_NAME}_CODE_ANALYSIS )
 				Add_WKCMAKE_Cppcheck_target(${PROJECT_NAME}_${test_name}_analysis ${PROJECT_NAME}_${test_name} "${${PROJECT_NAME}_TEST_DIR}/${test_name}-cppcheck.xml")
 			ENDIF ( ${PROJECT_NAME}_CODE_ANALYSIS )
-
-			message ( STATUS "== Detected binary dependencies for ${test_name} : ${${PROJECT_NAME}_BINDEPENDS}" )
-			message ( STATUS "== Detected source dependencies for ${test_name} : ${${PROJECT_NAME}_SRCDEPENDS}" )
+			
 			#if win32, moving all dependencies' run libraries
 			if ( WIN32 )
+				message ( STATUS "== Detected binary dependencies for ${test_name} : ${${PROJECT_NAME}_BINDEPENDS}" )
 				#needed for each run library dependency as well
 				foreach ( depend ${${PROJECT_NAME}_BINDEPENDS} )
 					foreach ( subdepend ${${depend}_LIBRARIES} )
 						ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${subdepend}>" "$<TARGET_FILE_DIR:${test_name}>" COMMENT "Copying $<TARGET_FILE:${subdepend}> to $<TARGET_FILE_DIR:${test_name}>" )
 					endforeach ( subdepend ${${depend}_LIBRARIES} )
 				endforeach ( depend ${${PROJECT_NAME}_BINDEPENDS} )
+				message ( STATUS "== Detected source dependencies for ${test_name} : ${${PROJECT_NAME}_SRCDEPENDS}" )
 				foreach ( depend ${${PROJECT_NAME}_SRCDEPENDS} )
 					foreach ( subdepend ${${depend}_LIBRARIES} )
 						ADD_CUSTOM_COMMAND( TARGET ${test_name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${subdepend}>" "$<TARGET_FILE_DIR:${test_name}>" COMMENT "Copying $<TARGET_FILE:${subdepend}> to $<TARGET_FILE_DIR:${test_name}>" )
