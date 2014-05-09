@@ -5,16 +5,12 @@ setlocal
 set BUILD_DIR="build"
 set SRC_DIR="%CD%"
 set BUILD_TYPE=Release
-set ENABLE_TESTS=ON
-
+rem not used here
+rem set ENABLE_TESTS=ON
 set ORI_DIR=%CD%
 
 @echo Building binary depend ..\ProjectC
 cd "..\ProjectC" && call build.bat
-cd %ORI_DIR%
-
-@echo Building binary depend Custom Depend\ProjectDsub_bin
-cd "Custom Depend\ProjectDsub_bin" && call build.bat 
 cd %ORI_DIR%
 
 @echo Source depend will be built with the current project
@@ -23,9 +19,11 @@ REM this can fail if directory already exist
 mkdir %BUILD_DIR%
 cd %BUILD_DIR%
 
+rem we pass ProjectB_SRC_DIR to work around problems with cmake and space in folders, while using backward compatible wkbuild command.
+
 echo "Running in %CD% :"
 rem ProjectDsub_DIR will be found automatically by wkcmake as it is a subdirectory
-cmake -DProjectB_BUILD_TYPE=%BUILD_TYPE% -DProjectB_ENABLE_TESTS=%ENABLE_TESTS% -DProjectC_DIR="..\ProjectC\build" %SRC_DIR%
+cmake -DProjectB_BUILD_TYPE=%BUILD_TYPE% -DProjectB_SRC_DIR="Custom Src" -DProjectC_DIR="..\ProjectC\build" %SRC_DIR%
 
 @echo off
 

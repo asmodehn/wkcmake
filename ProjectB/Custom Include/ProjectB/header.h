@@ -44,7 +44,9 @@ extern "C"
 {
 #endif
 
-    WK_ProjectB_API int B_display();
+	//IF We dont export symbols, we dont need this
+    //WK_ProjectB_ProjectB_API int B_display();
+	int B_display();
 
     /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

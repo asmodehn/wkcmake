@@ -50,5 +50,5 @@ WkTestDataDir ( "Custom Test Data" )
 # But the dependent project's library list and the include folder must be propagated
 WkDepends( "ProjectC" REQUIRED )
 
-WkBuild( EXECUTABLE "\"Custom Src\"" )
+WkBuild( EXECUTABLE "Custom Src" )
 
