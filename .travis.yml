@@ -5,7 +5,8 @@ compiler:
 install: 
 branches:
  only:
-  - test
+  - tests/Depends
+  - tests/multitarget
 notifications:
  recipients:
   - asmodehn@gmail.com
