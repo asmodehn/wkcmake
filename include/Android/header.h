@@ -40,7 +40,7 @@ extern "C"
 {
 #endif
 
-    WK_Android_API int android_display();
+    WK_Android_Android_API int android_display();
 
     /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
