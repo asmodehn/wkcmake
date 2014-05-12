@@ -375,6 +375,7 @@ if( NOT ANDROID_NDK )
  # see if we have path to Android standalone toolchain
  __INIT_VARIABLE( ANDROID_STANDALONE_TOOLCHAIN PATH ENV_ANDROID_STANDALONE_TOOLCHAIN OBSOLETE_ANDROID_NDK_TOOLCHAIN_ROOT OBSOLETE_ENV_ANDROID_NDK_TOOLCHAIN_ROOT )
 
+
  if( NOT ANDROID_STANDALONE_TOOLCHAIN )
   #try to find Android NDK in one of the the default locations
   set( __ndkSearchPaths )
@@ -428,11 +429,11 @@ elseif( ANDROID_STANDALONE_TOOLCHAIN )
   unset( __androidStandaloneToolchainPreviousPath )
   unset( __length )
  endif()
- set( ANDROID_STANDALONE_TOOLCHAIN "${ANDROID_STANDALONE_TOOLCHAIN}" CACHE INTERNAL "Path of the Android standalone toolchain" )
+ set( ANDROID_STANDALONE_TOOLCHAIN "${ANDROID_STANDALONE_TOOLCHAIN}" CACHE PATH "Path of the Android standalone toolchain" )
  set( BUILD_WITH_STANDALONE_TOOLCHAIN True )
 else()
  list(GET ANDROID_NDK_SEARCH_PATHS 0 ANDROID_NDK_SEARCH_PATH)
- message( FATAL_ERROR "Could not find neither Android NDK nor Android standalone toolcahin.
+ message( FATAL_ERROR "Could not find neither Android NDK nor Android standalone toolchain.
     You should either set an environment variable:
       export ANDROID_NDK=~/my-android-ndk
     or
