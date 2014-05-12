@@ -1,12 +1,12 @@
 [submodule "ProjectC/CMake"]
 	path = ProjectC/CMake
-	url = git@github.com:asmodehn/wkcmake.git
+	url = https://github.com/asmodehn/wkcmake.git
 	branch = master
 [submodule "ProjectB/Custom CMake"]
 	path = ProjectB/Custom CMake
-	url = git@github.com:asmodehn/wkcmake.git
+	url = https://github.com/asmodehn/wkcmake.git
 	branch = master
 [submodule "ProjectA/CMake"]
 	path = ProjectA/CMake
-	url = git@github.com:asmodehn/wkcmake.git
+	url = https://github.com/asmodehn/wkcmake.git
 	branch = master
