@@ -556,7 +556,8 @@ macro (WkTargetSetProperties target_name )
 
 		#setting target property
 		set_target_properties( ${target_name} PROPERTIES COMPILE_FLAGS "${${PROJECT_NAME}_C_FLAGS}")
-		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${PROJECT_NAME}_C_DEFINITIONS_DEBUG> $<$<CONFIG:Release>:${PROJECT_NAME}_C_DEFINITIONS_RELEASE> )
+		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${${PROJECT_NAME}_C_DEFINITIONS_DEBUG}> )
+		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:${${PROJECT_NAME}_C_DEFINITIONS_RELEASE}> )
 	endif()
 	#message(STATUS "${PROJECT_NAME}_CXX_COMPILER_LOADED ${${PROJECT_NAME}_CXX_COMPILER_LOADED}")
 	if ( ${PROJECT_NAME}_CXX_COMPILER_LOADED )
@@ -570,7 +571,8 @@ macro (WkTargetSetProperties target_name )
 
 		#setting target property
 		set_target_properties( ${target_name} PROPERTIES COMPILE_FLAGS "${${PROJECT_NAME}_CXX_FLAGS}")
-		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${PROJECT_NAME}_CXX_DEFINITIONS_DEBUG> $<$<CONFIG:Release>:${PROJECT_NAME}_CXX_DEFINITIONS_RELEASE> )
+		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${${PROJECT_NAME}_CXX_DEFINITIONS_DEBUG}> )
+		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:${${PROJECT_NAME}_CXX_DEFINITIONS_RELEASE}> )
 	endif()
 
 	get_target_property(${PROJECT_NAME}_${target_name}_TYPE ${target_name} TYPE)

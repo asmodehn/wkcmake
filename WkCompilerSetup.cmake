@@ -48,15 +48,6 @@ macro(WkSetCFlags)
 	MARK_AS_ADVANCED(FORCE ${PROJECT_NAME}_C_FLAGS )
 endmacro(WkSetCFlags )
 
-# Usage : WkSetCDefinitions( [Debug|Release] [newdef1;newdef2] )
-macro(WkSetCDefinitions Build)
-	IF (${Build} STREQUAL Debug )
-
-	ELSEIF (${Build} STREQUAL Release )
-
-	ENDIF ()
-endmacro(WkSetCDefinitions Build)
-
 # Usage : WkAddCFlags( "-new -flags" )
 macro(WkAddCFlags)
 	IF ( ${PROJECT_NAME}_C_FLAGS )
