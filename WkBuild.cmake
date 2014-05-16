@@ -556,8 +556,13 @@ macro (WkTargetSetProperties target_name )
 
 		#setting target property
 		set_target_properties( ${target_name} PROPERTIES COMPILE_FLAGS "${${PROJECT_NAME}_C_FLAGS}")
-		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${${PROJECT_NAME}_C_DEFINITIONS_DEBUG}> )
-		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:${${PROJECT_NAME}_C_DEFINITIONS_RELEASE}> )
+		#IF(WIN32)
+		#	set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${PROJECT_NAME}_C_DEFINITIONS_DEBUG> )
+		#	set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:${PROJECT_NAME}_C_DEFINITIONS_RELEASE> )
+		#ELSE() #buggy cmake 3.0
+			set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${${PROJECT_NAME}_C_DEFINITIONS_DEBUG}> )
+			set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:${${PROJECT_NAME}_C_DEFINITIONS_RELEASE}> )
+		#ENDIF()
 	endif()
 	#message(STATUS "${PROJECT_NAME}_CXX_COMPILER_LOADED ${${PROJECT_NAME}_CXX_COMPILER_LOADED}")
 	if ( ${PROJECT_NAME}_CXX_COMPILER_LOADED )
@@ -571,8 +576,13 @@ macro (WkTargetSetProperties target_name )
 
 		#setting target property
 		set_target_properties( ${target_name} PROPERTIES COMPILE_FLAGS "${${PROJECT_NAME}_CXX_FLAGS}")
-		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${${PROJECT_NAME}_CXX_DEFINITIONS_DEBUG}> )
-		set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:${${PROJECT_NAME}_CXX_DEFINITIONS_RELEASE}> )
+		#if (WIN32)
+		#	set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${PROJECT_NAME}_CXX_DEFINITIONS_DEBUG> )
+		#	set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:${PROJECT_NAME}_CXX_DEFINITIONS_RELEASE> )
+		#else() # buggy cmake 3
+			set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:${${PROJECT_NAME}_CXX_DEFINITIONS_DEBUG}> )
+			set_property( TARGET ${target_name} APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:${${PROJECT_NAME}_CXX_DEFINITIONS_RELEASE}> )
+		#endif()
 	endif()
 
 	get_target_property(${PROJECT_NAME}_${target_name}_TYPE ${target_name} TYPE)
