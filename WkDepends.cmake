@@ -184,7 +184,9 @@ macro (WkSrcDepends dir_name)
 
 			message ( STATUS "== Source Dependency ${subprj_name} : FOUND ! " )
 			
-		else ( ${subprj_name}_INCLUDE_DIR )	
+		else ( ${subprj_name}_INCLUDE_DIR )
+			#Assumed normal cmake format
+			#TODO : Extract useful information ( Includes, LinkDirs, etc. )
 			message ( STATUS "== Source Dependency ${subprj_name} : NOT FOUND ! " )
 		endif ( ${subprj_name}_INCLUDE_DIR )
 endmacro (WkSrcDepends dir_name)
