@@ -102,6 +102,11 @@ CMAKE_POLICY(PUSH)
 CMAKE_POLICY(VERSION 2.6)
 	project(${project_name_arg} ${ARGN})
 	
+	#if a version has been defined we put it in cache
+	if ( ${PROJECT_NAME}_VERSION )
+		set( ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION} CACHE STRING "Version for ${PROJECT_NAME}")
+	endif ( ${PROJECT_NAME}_VERSION )
+	
 	#To add this project as a source dependency to a master project
 	if ( NOT ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		set (${CMAKE_PROJECT_NAME}_SRCDEPENDS ${${CMAKE_PROJECT_NAME}_SRCDEPENDS} ${PROJECT_NAME} CACHE STRING "List of Project Dependencies that needs to be built with the Main Project")
