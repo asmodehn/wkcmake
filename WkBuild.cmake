@@ -30,9 +30,9 @@
 #debug
 message ( STATUS "== Loading WkBuild.cmake ..." )
 
-if ( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6 )
-	message ( FATAL_ERROR " CMAKE MINIMUM BACKWARD COMPATIBILITY REQUIRED : 2.6 !" )
-endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.6 )
+if ( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.8 )
+	message ( FATAL_ERROR " CMAKE MINIMUM BACKWARD COMPATIBILITY REQUIRED : 2.8 !" )
+endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.8 )
 
 #test to make sure necessary variables have been set.
 
@@ -386,14 +386,11 @@ CMAKE_POLICY(VERSION 2.6)
 	WkTargetSetProperties (${target_name})
 
 	#
-	# Copying data directory after build ( for use by project later )
+	# Copying data directory during configure
 	#
-	ADD_CUSTOM_COMMAND( TARGET ${target_name} POST_BUILD 
-		COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory 
-		"${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_DATA_DIR}" "${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_DATA_DIR}"
-		COMMENT
-		"Copying ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_DATA_DIR} to ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_DATA_DIR}"
-	)
+	if (EXISTS "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_DATA_DIR}")
+		file(COPY "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_DATA_DIR}" DESTINATION "${PROJECT_BINARY_DIR}")
+	endif()
 
 CMAKE_POLICY(POP)
 endmacro(WkLibraryBuild)
@@ -513,14 +510,11 @@ CMAKE_POLICY(VERSION 2.6)
 	WkPlatformConfigure()
 	
 	#
-	# Copying data directory after build ( for use by project later )
+	# Copying data directory during configure
 	#
-	ADD_CUSTOM_COMMAND( TARGET ${target_name} POST_BUILD 
-		COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory 
-		"${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_DATA_DIR}" "${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_DATA_DIR}"
-		COMMENT
-		"Copying ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_DATA_DIR} to ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_DATA_DIR}"
-	)
+	if (EXISTS "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_DATA_DIR}")
+		file(COPY "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_DATA_DIR}" DESTINATION "${PROJECT_BINARY_DIR}")
+	endif()
 
 CMAKE_POLICY(POP)
 endmacro(WkExecutableBuild)
