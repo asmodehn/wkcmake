@@ -339,6 +339,33 @@ CMAKE_POLICY(VERSION 2.6)
 	#Setting up AStyle target
 	WkTargetFormat(${target_name} ${${PROJECT_NAME}_${target_name}_SOURCES})
 
+	#Setting precompile header
+	if(${PROJECT_NAME}_PCH)
+		#hardcode precompiled header name
+		#set variable when creating the option
+		message ( STATUS "== Preparing ${target_name} for Precompiled header." )	
+	    #GET_FILENAME_COMPONENT(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
+		#SET(PrecompiledBinary "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
+		SET(PrecompiledBinary "${CMAKE_CURRENT_BINARY_DIR}/stdafx.pch")
+		SET(Sources ${${SourcesVar}})
+
+		foreach(f ${${PROJECT_NAME}_${target_name}_SOURCES})
+			string(FIND ${f} "stdafx.cpp" isPCH)
+			string(FIND ${f} ".cpp" isUsingPCH)
+			if(isPCH GREATER -1)
+				SET_SOURCE_FILES_PROPERTIES(${f}
+											PROPERTIES COMPILE_FLAGS "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+													   OBJECT_OUTPUTS "${PrecompiledBinary}") 
+			elseif(isUsingPCH GREATER -1)
+				SET_SOURCE_FILES_PROPERTIES(${f}
+											PROPERTIES COMPILE_FLAGS "/Yu\"${PrecompiledBinary}\" /FI\"${PrecompiledBinary}\" /Fp\"${PrecompiledBinary}\""
+										   OBJECT_DEPENDS "${PrecompiledBinary}") 
+			endif()
+		endforeach(f)
+	else()
+		message ( STATUS "== Not using Precompiled header." )
+	endif()
+	
 	#internal headers ( non visible by outside project )
 	include_directories("${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_${target_name}_SRC_DIR}")
 	
