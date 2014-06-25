@@ -109,7 +109,9 @@ CMAKE_POLICY(VERSION 2.6)
 	
 	#To add this project as a source dependency to a master project
 	if ( NOT ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
-		set (${CMAKE_PROJECT_NAME}_SRCDEPENDS ${${CMAKE_PROJECT_NAME}_SRCDEPENDS} ${PROJECT_NAME} CACHE STRING "List of Project Dependencies that needs to be built with the Main Project")
+		set (${CMAKE_PROJECT_NAME}_SRCDEPENDS ${${CMAKE_PROJECT_NAME}_SRCDEPENDS} ${PROJECT_NAME} PARENT_SCOPE) 
+		# NOT IN CACHE because it needs to change everytime. no change ( as with cache ) means error ( not a wkcmake dependency )
+		# IN PARENT SCOPE, so a call to add_subdirectory can retrieve it
 	endif()
 	
 	message(STATUS "= Configuring ${PROJECT_NAME}")

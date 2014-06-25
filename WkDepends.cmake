@@ -157,38 +157,47 @@ macro (WkSrcDepends dir_name)
 
 		#TODO : Make sure the add_subdirectory does what it is supposed to
 		# and that we dont add another different project...
-		# => How to check for errors ?
+		list(LENGTH ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize_before)
 		add_subdirectory(${dir_name} ${CMAKE_CURRENT_BINARY_DIR}/${dir_name})
-		list(LENGTH ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize)
-		list ( GET ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize-1 subprj_name )
+		list(LENGTH ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize_after)
 		
-		#defining ${subprj_name}_DIR as build directory.
-		#We need it later to get location of libraries and other build results, to work in the same way as bin dependencies.
-		set ( ${subprj_name}_DIR ${CMAKE_CURRENT_BINARY_DIR}/${dir_name} )
-		
-		if ( ${subprj_name}_INCLUDE_DIR )
-
-			#dependencies headers ( need to be included after project's own headers )
-			#Note : we use the include dir from source, not from the copy in binary dir.
-			file( TO_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${dir_name}/${${subprj_name}_INCLUDE_DIR} subprj_include_path)
-			file( TO_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${dir_name}/CMakeFiles subprj_include_wk_path)
+		if ( dpdlsize_before EQUAL dpdlsize_after )
+			#NOT a WKCMAKE project ( OR ERROR ?? )
+			set ( subprj_name ${dir_name} )
+			# WHAT CAN WE DO MORE HERE ??
+			message(WARNING "${dir_name} is not a CMake project. You will need to manually link to it in CMakeLists.txt")
+		else ()
+			#WKCMAKE project. we can get his name.
+			list ( GET ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize-1 subprj_name )
 			
-			#To match a binary dependency variable names :
-			set ( ${subprj_name}_INCLUDE_DIRS ${subprj_include_wk_path} ${subprj_include_path} CACHE PATH "${subprj_name} Headers directories")
-			include_directories(${${subprj_name}_INCLUDE_DIRS})
-			message ( STATUS "== Source Dependency ${subprj_name} include : ${${subprj_name}_INCLUDE_DIRS} OK !")
-
-			set ( WK_${PROJECT_NAME}_FOUND_${subprj_name} ON )
-			#this is not necessary if WkPlatform does the job as it should
-			#add_definitions(-D WK_${PROJECT_NAME}_FOUND_${subprj_name})
-
-			message ( STATUS "== Source Dependency ${subprj_name} : FOUND ! " )
+			#defining ${subprj_name}_DIR as build directory.
+			#We need it later to get location of libraries and other build results, to work in the same way as bin dependencies.
+			set ( ${subprj_name}_DIR ${CMAKE_CURRENT_BINARY_DIR}/${dir_name} )
 			
-		else ( ${subprj_name}_INCLUDE_DIR )
-			#Assumed normal cmake format
-			#TODO : Extract useful information ( Includes, LinkDirs, etc. )
-			message ( STATUS "== Source Dependency ${subprj_name} : NOT FOUND ! " )
-		endif ( ${subprj_name}_INCLUDE_DIR )
+			if ( ${subprj_name}_INCLUDE_DIR )
+			
+				#dependencies headers ( need to be included after project's own headers )
+				#Note : we use the include dir from source, not from the copy in binary dir ?
+				file( TO_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${dir_name}/${${subprj_name}_INCLUDE_DIR} subprj_include_path)
+				file( TO_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${dir_name}/CMakeFiles subprj_include_wk_path)
+				
+				#To match a binary dependency variable names :
+				set ( ${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS ${subprj_include_wk_path} ${subprj_include_path} CACHE PATH "${subprj_name} Headers directories")
+				include_directories(${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS})
+				message ( STATUS "== Source Dependency ${subprj_name} include : ${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS} OK !")
+
+				set ( WK_${PROJECT_NAME}_FOUND_${subprj_name} ON )
+				#this is not necessary if WkPlatform does the job as it should
+				#add_definitions(-D WK_${PROJECT_NAME}_FOUND_${subprj_name})
+
+				message ( STATUS "== Source Dependency ${subprj_name} : FOUND ! " )
+				
+			else ( ${subprj_name}_INCLUDE_DIR )
+				#Assumed normal cmake format
+				#TODO : Extract useful information ( Includes, LinkDirs, etc. )
+				message ( STATUS "== Source Dependency ${subprj_name} : NOT FOUND ! " )
+			endif ( ${subprj_name}_INCLUDE_DIR )
+		endif ()
 endmacro (WkSrcDepends dir_name)
 
 #
@@ -286,9 +295,9 @@ macro(WkLinkSrcDepends target subprj_name)
 	
 	if ( ${subprj_name}_LIBRARY )
 
-		set ( ${subprj_name}_LIBRARIES ${${subprj_name}_LIBRARY} CACHE FILEPATH "${subprj_name} Libraries ")
+		set ( ${PROJECT_NAME}_${subprj_name}_LIBRARIES ${${subprj_name}_LIBRARY} CACHE FILEPATH "${subprj_name} Libraries ")
 		
-		foreach(dpdlib ${${package_var_name}_LIBRARIES})
+		foreach(dpdlib ${${PROJECT_NAME}_${subprj_name}_LIBRARIES})
 			get_target_property(dpdlib_type ${dpdlib} TYPE)
 			if (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
 				TARGET_LINK_LIBRARIES(${target} ${dpdlib})
@@ -306,7 +315,7 @@ macro(WkLinkSrcDepends target subprj_name)
 
 		endforeach()
 
-		message ( STATUS "== Source Dependency ${subprj_name} libs : ${${subprj_name}_LIBRARIES} OK !")
+		message ( STATUS "== Source Dependency ${subprj_name} libs : ${${PROJECT_NAME}_${subprj_name}_LIBRARIES} OK !")
 		
 		# Once the project is built with it, the dependency becomes mandatory
 		if ( ${subprj_name}_DIR )
@@ -337,8 +346,8 @@ endif ( EXISTS \"${${subprj_name}_FDIR}/${subprj_name}Export.cmake\" )
 
 # Include directory might be needed by upper project if ${PROJECT_NAME} doesnt totally encapsulate it.
 # NB : It shouldnt hurt if the upper project also define it as its own dependency
-set(${PROJECT_NAME}_INCLUDE_DIRS \"${${subprj_name}_INCLUDE_DIRS}\" \${${PROJECT_NAME}_INCLUDE_DIRS} )
-set(${PROJECT_NAME}_LIBRARIES \${${PROJECT_NAME}_LIBRARIES} \"${${subprj_name}_LIBRARIES}\" )
+set(${PROJECT_NAME}_INCLUDE_DIRS \"${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS}\" \${${PROJECT_NAME}_INCLUDE_DIRS} )
+set(${PROJECT_NAME}_LIBRARIES \${${PROJECT_NAME}_LIBRARIES} \"${${PROJECT_NAME}_${subprj_name}_LIBRARIES}\" )
 
 		")
 		
