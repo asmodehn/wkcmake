@@ -332,15 +332,6 @@ CMAKE_POLICY(VERSION 2.6)
 	# to show we are using WkCMake to build ( can be #ifdef in header )
 	add_definitions( -D WK_BUILD )
 
-	#TODO : find a simpler way than this complex merge...
-	MERGE("${${PROJECT_NAME}_${target_name}_HEADERS}" "${${PROJECT_NAME}_${target_name}_SOURCES}" ${PROJECT_NAME}_${target_name}_SOURCES)
-	#MESSAGE ( STATUS "== ${target_name} Sources : ${${target_name}_SOURCES}" )
-	
-	AddPlatformCheckSrc(${PROJECT_NAME}_${target_name}_SOURCES)
-
-	#Setting up AStyle target
-	WkTargetFormat(${target_name} ${${PROJECT_NAME}_${target_name}_SOURCES})
-
 	#Setting precompile header
 	if(${PROJECT_NAME}_PCH)
 		#hardcode precompiled header name
@@ -368,6 +359,15 @@ CMAKE_POLICY(VERSION 2.6)
 		message ( STATUS "== Not using Precompiled header." )
 	endif()
 	
+	#TODO : find a simpler way than this complex merge...
+	MERGE("${${PROJECT_NAME}_${target_name}_HEADERS}" "${${PROJECT_NAME}_${target_name}_SOURCES}" ${PROJECT_NAME}_${target_name}_ALL_SOURCES)
+	#MESSAGE ( STATUS "== ${target_name} Sources : ${${target_name}_ALL_SOURCES}" )
+	
+	AddPlatformCheckSrc(${PROJECT_NAME}_${target_name}_ALL_SOURCES)
+
+	#Setting up AStyle target
+	WkTargetFormat(${target_name} ${${PROJECT_NAME}_${target_name}_ALL_SOURCES})
+	
 	#internal headers ( non visible by outside project )
 	include_directories("${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_${target_name}_SRC_DIR}")
 	
@@ -376,7 +376,7 @@ CMAKE_POLICY(VERSION 2.6)
 	#	-source_dir/include for the unmodified ones, 
 	include_directories("${PROJECT_BINARY_DIR}/CMakeFiles" "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}" )
 
-	add_library(${target_name} ${${PROJECT_NAME}_${target_name}_load_type} ${${PROJECT_NAME}_${target_name}_SOURCES})
+	add_library(${target_name} ${${PROJECT_NAME}_${target_name}_load_type} ${${PROJECT_NAME}_${target_name}_ALL_SOURCES})
 
 	#defining where to put what has been built
 	SET(${CMAKE_PROJECT_NAME}_LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${CMAKE_PROJECT_NAME}_LIB_DIR} CACHE PATH "Ouput directory for ${PROJECT_NAME} libraries." )
@@ -481,13 +481,13 @@ CMAKE_POLICY(VERSION 2.6)
 	add_definitions( -D WK_BUILD )
 
 	#TODO : find a simpler way than this complex merge...
-	MERGE("${${PROJECT_NAME}_${target_name}_HEADERS}" "${${PROJECT_NAME}_${target_name}_SOURCES}" ${PROJECT_NAME}_${target_name}_SOURCES)
+	MERGE("${${PROJECT_NAME}_${target_name}_HEADERS}" "${${PROJECT_NAME}_${target_name}_SOURCES}" ${PROJECT_NAME}_${target_name}_ALL_SOURCES)
 	#MESSAGE ( STATUS "== ${PROJECT_NAME} Sources : ${SOURCES}" )
 	
-	AddPlatformCheckSrc(${PROJECT_NAME}_${target_name}_SOURCES)
+	AddPlatformCheckSrc(${PROJECT_NAME}_${target_name}_ALL_SOURCES)
 
 	#Setting up AStyle target
-	WkTargetFormat(${target_name} ${${PROJECT_NAME}_${target_name}_SOURCES})
+	WkTargetFormat(${target_name} ${${PROJECT_NAME}_${target_name}_ALL_SOURCES})
 
 	#internal headers ( non visible by outside project )
 	include_directories("${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_${target_name}_SRC_DIR}")
@@ -497,7 +497,7 @@ CMAKE_POLICY(VERSION 2.6)
 	#	-source_dir/include for the unmodified ones, 
 	include_directories("${PROJECT_BINARY_DIR}/CMakeFiles" "${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}" )
 
-	add_executable(${target_name} ${${PROJECT_NAME}_${target_name}_SOURCES})
+	add_executable(${target_name} ${${PROJECT_NAME}_${target_name}_ALL_SOURCES})
 
 	SET(${CMAKE_PROJECT_NAME}_RUNTIME_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${CMAKE_PROJECT_NAME}_BIN_DIR} CACHE PATH "Ouput directory for ${PROJECT_NAME} executables." )
 	mark_as_advanced(FORCE ${CMAKE_PROJECT_NAME}_RUNTIME_OUTPUT_PATH)
