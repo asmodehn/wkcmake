@@ -405,8 +405,7 @@ CMAKE_POLICY(VERSION 2.6)
 			"Copying ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} to ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}" 
 		)
 	else()
-		message ( WARNING "Directory ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} NOT FOUND !" )
-		message ( WARNING "Headers for ${target_name} cannot be copied !" )
+		message ( WARNING "Directory ${PROJECT_SOURCE_DIR}/${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} NOT FOUND ! Headers for ${target_name} cannot be copied !" )
 	endif()
 
 	#generating configured Header for detected packages and lib export definition
