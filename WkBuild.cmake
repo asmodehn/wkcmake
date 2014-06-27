@@ -379,9 +379,9 @@ CMAKE_POLICY(VERSION 2.6)
 	add_library(${target_name} ${${PROJECT_NAME}_${target_name}_load_type} ${${PROJECT_NAME}_${target_name}_ALL_SOURCES})
 
 	#defining where to put what has been built
-	SET(${CMAKE_PROJECT_NAME}_LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${CMAKE_PROJECT_NAME}_LIB_DIR} CACHE PATH "Ouput directory for ${PROJECT_NAME} libraries." )
-	mark_as_advanced(FORCE ${CMAKE_PROJECT_NAME}_LIBRARY_OUTPUT_PATH)
-	SET(LIBRARY_OUTPUT_PATH "${${CMAKE_PROJECT_NAME}_LIBRARY_OUTPUT_PATH}" CACHE INTERNAL "Internal CMake libraries output directory. Do not edit." FORCE)
+	SET(${PROJECT_NAME}_LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_LIB_DIR} CACHE PATH "Ouput directory for ${PROJECT_NAME} libraries." )
+	mark_as_advanced(FORCE ${PROJECT_NAME}_LIBRARY_OUTPUT_PATH)
+	SET(LIBRARY_OUTPUT_PATH "${${PROJECT_NAME}_LIBRARY_OUTPUT_PATH}" CACHE INTERNAL "Internal CMake libraries output directory. Do not edit." FORCE)
 	
 	# adding dependencies for cppcheck ( and format ) targets
 	WkTargetCppCheck(${PROJECT_NAME})
@@ -498,9 +498,9 @@ CMAKE_POLICY(VERSION 2.6)
 
 	add_executable(${target_name} ${${PROJECT_NAME}_${target_name}_ALL_SOURCES})
 
-	SET(${CMAKE_PROJECT_NAME}_RUNTIME_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${CMAKE_PROJECT_NAME}_BIN_DIR} CACHE PATH "Ouput directory for ${PROJECT_NAME} executables." )
-	mark_as_advanced(FORCE ${CMAKE_PROJECT_NAME}_RUNTIME_OUTPUT_PATH)
-	SET(RUNTIME_OUTPUT_PATH "${${CMAKE_PROJECT_NAME}_RUNTIME_OUTPUT_PATH}" CACHE INTERNAL "Internal CMake executables output directory. Do not edit." FORCE)
+	SET(${PROJECT_NAME}_RUNTIME_OUTPUT_PATH ${PROJECT_BINARY_DIR}/${${PROJECT_NAME}_BIN_DIR} CACHE PATH "Ouput directory for ${PROJECT_NAME} executables." )
+	mark_as_advanced(FORCE ${PROJECT_NAME}_RUNTIME_OUTPUT_PATH)
+	SET(RUNTIME_OUTPUT_PATH "${${PROJECT_NAME}_RUNTIME_OUTPUT_PATH}" CACHE INTERNAL "Internal CMake executables output directory. Do not edit." FORCE)
 
 	# adding dependencies for cppcheck ( and format ) targets
 	WkTargetCppCheck(${PROJECT_NAME})
