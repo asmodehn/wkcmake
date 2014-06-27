@@ -181,8 +181,15 @@ macro (WkSrcDepends dir_name)
 				file( TO_CMAKE_PATH ${dir_name}/${${subprj_name}_INCLUDE_DIR} subprj_include_path)
 				file( TO_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/${dir_name}/CMakeFiles subprj_include_wk_path)
 				
+				#Gettin all additional include directories
+				set ( ${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS ${subprj_include_wk_path} ${subprj_include_path} )
+				foreach( path ${${subprj_name}_INCLUDE_DIRS} )
+					file( TO_CMAKE_PATH ${dir_name}/${path} cmake_path)
+					set ( ${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS ${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS} ${cmake_path} )
+				endforeach (path)
+				
 				#To match a binary dependency variable names :
-				set ( ${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS ${subprj_include_wk_path} ${subprj_include_path} CACHE PATH "${subprj_name} Headers directories")
+				set ( ${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS ${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS} CACHE PATH "${subprj_name} Headers directories")
 				include_directories(${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS})
 				message ( STATUS "== Source Dependency ${subprj_name} include : ${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS} OK !")
 
