@@ -232,6 +232,8 @@ macro(WkLinkBinDepends target package_name)
 			if (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
 				TARGET_LINK_LIBRARIES(${target} ${dpdlib})
 				ADD_DEPENDENCIES(${target} ${dpdlib})
+				#Exporting targets
+				export(TARGETS ${dpdlib} APPEND FILE ${PROJECT_NAME}Export.cmake)
 			endif (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
 
 			#We need to move project libraries and dependencies to the test target location after build.
@@ -309,6 +311,8 @@ macro(WkLinkSrcDepends target subprj_name)
 			if (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
 				TARGET_LINK_LIBRARIES(${target} ${dpdlib})
 				ADD_DEPENDENCIES(${target} ${dpdlib})
+				#Exporting targets
+				export(TARGETS ${dpdlib} APPEND FILE ${PROJECT_NAME}Export.cmake)
 			endif (NOT dpdlib_type STREQUAL MODULE_LIBRARY)
 
 			#We need to move project libraries and dependencies to the test target location after build.
