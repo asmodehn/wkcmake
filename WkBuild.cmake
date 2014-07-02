@@ -321,11 +321,35 @@ CMAKE_POLICY(VERSION 2.6)
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hh 
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hpp
 	)
+	#putting them in source groups. Very useful for VS.
+	if(WIN32)
+		foreach( header ${${PROJECT_NAME}_${target_name}_HEADERS} )
+			message(${header})
+			get_filename_component(folder ${header} DIRECTORY)
+			message(${folder})
+			string(REPLACE "/" "\\" folder ${folder})
+			message(${folder})
+			SOURCE_GROUP("${folder}" FILES ${header})
+		endforeach(header)
+	endif(WIN32)
+	
 	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.c
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cpp
 		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cc
 	)
+	#putting them in source groups. Very useful for VS.
+	if(WIN32)
+		foreach( source ${${PROJECT_NAME}_${target_name}_SOURCES} )
+			message(${source})
+			get_filename_component(folder ${source} DIRECTORY)
+			message(${folder})
+			string(REPLACE "/" "\\" folder ${folder})
+			message(${folder})
+			SOURCE_GROUP("${folder}" FILES ${source})
+		endforeach(source)
+	endif(WIN32)
+	
 	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_HEADERS}" )
 	message ( STATUS "== Sources detected in ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_SOURCES}" )
 
