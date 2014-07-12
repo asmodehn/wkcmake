@@ -31,10 +31,13 @@ if ( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.8.3 )
 	message ( FATAL_ERROR " CMAKE MINIMUM BACKWARD COMPATIBILITY REQUIRED : 2.8.3 !" )
 endif( CMAKE_BACKWARDS_COMPATIBILITY LESS 2.8.3 )
 
-message ( STATUS "== Loading WkCMake.cmake from ${CMAKE_CURRENT_LIST_DIR}... ")
+#If WkCMake is already loaded, this copy will not be used ( cache variables already set, macros already defined, etc. )
+if ( NOT WKCMAKE_DIR )
+	message ( STATUS "== Loading WkCMake.cmake from ${CMAKE_CURRENT_LIST_DIR}... ")
 
-set ( WKCMAKE_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "WkCMake Scripts path" )
-mark_as_advanced ( WKCMAKE_DIR )
+	set ( WKCMAKE_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "WkCMake Scripts path" )
+	mark_as_advanced ( WKCMAKE_DIR )
+endif(NOT WKCMAKE_DIR)
 
 macro(WkCMakeInit)
     if (NOT WKCMAKE_INIT_DONE) #to protect against add_subdirectory(). Only top WkCMake loads and inits.
