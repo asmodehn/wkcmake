@@ -520,7 +520,7 @@ endmacro(WkExecutableBuild)
 # ${PROJECT_NAME}_${target_name}_SRC_DIR needs to hod the source directory where the cmakelists.txt will be created
 macro (WkGenSourceList target_name)
 
-	if ( EXISTS ${${PROJECT_NAME}_${target_name}_SRC_DIR}/CMakeLists.txt)
+	if ( EXISTS "${${PROJECT_NAME}_${target_name}_SRC_DIR}/CMakeLists.txt")
 		#If there already is a cmake lists there, we dont need to generate source list
 		option(${PROJECT_NAME}_${target_name}_GENERATE_SOURCELIST "Wether or not you want wkcmake to generate the source list for ${PROJECT_NAME}_${target_name}" OFF)
 	else() # if there is no cmakelists, the default is ON. but cache value will always prevail.
