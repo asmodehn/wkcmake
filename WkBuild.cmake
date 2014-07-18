@@ -310,43 +310,11 @@ CMAKE_POLICY(VERSION 2.6)
 	#configuration depending on build type
 	WkBuildTypeConfig()
 
-	#globbing source files
-	message ( STATUS "== Gathering source files for ${PROJECT_NAME}_${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR}..." )
+	WkGenSourceList(${target_name})
 	
-	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_HEADERS RELATIVE "${PROJECT_SOURCE_DIR}"
-		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.h 
-		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hh 
-		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hpp 
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.h 
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hh 
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hpp
-	)
-	#putting them in source groups. Very useful for VS.
-	if(WIN32)
-		foreach( header ${${PROJECT_NAME}_${target_name}_HEADERS} )
-			get_filename_component(folder ${header} DIRECTORY)
-			string(REPLACE "/" "\\" folder ${folder})
-			SOURCE_GROUP("${folder}" FILES ${header})
-		endforeach(header)
-	endif(WIN32)
+	#Loading source list from subdirectory
+	add_subdirectory(${${PROJECT_NAME}_${target_name}_SRC_DIR})
 	
-	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.c
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cpp
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cc
-	)
-	#putting them in source groups. Very useful for VS.
-	if(WIN32)
-		foreach( source ${${PROJECT_NAME}_${target_name}_SOURCES} )
-			get_filename_component(folder ${source} DIRECTORY)
-			string(REPLACE "/" "\\" folder ${folder})
-			SOURCE_GROUP("${folder}" FILES ${source})
-		endforeach(source)
-	endif(WIN32)
-	
-	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_HEADERS}" )
-	message ( STATUS "== Sources detected in ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_SOURCES}" )
-
 	# to show we are using WkCMake to build ( can be #ifdef in header )
 	add_definitions( -D WK_BUILD )
 
@@ -472,28 +440,11 @@ CMAKE_POLICY(VERSION 2.6)
 	#configuration depending on build type
 	WkBuildTypeConfig()
 
-	#globbing source files
-	message ( STATUS "== Gathering source files for ${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_INCLUDE_DIR} and ${${target_name}_SRC_DIR}..." )
+	WkGenSourceList(${target_name})
 	
-	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_HEADERS RELATIVE "${PROJECT_SOURCE_DIR}"
-		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.h 
-		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hh 
-		${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hpp 
-		${${PROJECT_NAME}_INCLUDE_DIR}/*.h 
-		${${PROJECT_NAME}_INCLUDE_DIR}/*.hh 
-		${${PROJECT_NAME}_INCLUDE_DIR}/*.hpp 
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.h 
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hh 
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hpp
-	)
-	FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.c
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cpp
-		${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cc
-	)
-	message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_HEADERS}" )
-	message ( STATUS "== Sources detected in ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_SOURCES}" )
-
+	#Loading source list from subdirectory
+	add_subdirectory(${${PROJECT_NAME}_${target_name}_SRC_DIR})
+	
 	# to show we are using WkCMake to build ( can be #ifdef in header )
 	add_definitions( -D WK_BUILD )
 
@@ -564,6 +515,68 @@ CMAKE_POLICY(VERSION 2.6)
 
 CMAKE_POLICY(POP)
 endmacro(WkExecutableBuild)
+
+# Generate source list cmakelists.txt file for target_name
+# ${PROJECT_NAME}_${target_name}_SRC_DIR needs to hod the source directory where the cmakelists.txt will be created
+macro (WkGenSourceList target_name)
+
+	if ( EXISTS ${${PROJECT_NAME}_${target_name}_SRC_DIR}/CMakeLists.txt)
+		#If there already is a cmake lists there, we dont need to generate source list
+		option(${PROJECT_NAME}_${target_name}_GENERATE_SOURCELIST "Wether or not you want wkcmake to generate the source list for ${PROJECT_NAME}_${target_name}" OFF)
+	else() # if there is no cmakelists, the default is ON. but cache value will always prevail.
+		option(${PROJECT_NAME}_${target_name}_GENERATE_SOURCELIST "Wether or not you want wkcmake to generate the source list for ${PROJECT_NAME}_${target_name}" ON)
+	endif()
+
+	IF(${PROJECT_NAME}_${target_name}_GENERATE_SOURCELIST)
+		#globbing source files
+		message ( STATUS "== Gathering source files for ${PROJECT_NAME}_${target_name} in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR}..." )
+		
+		FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_HEADERS RELATIVE "${PROJECT_SOURCE_DIR}"
+			${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.h 
+			${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hh 
+			${${PROJECT_NAME}_INCLUDE_DIR}/${target_name}/*.hpp 
+			${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.h 
+			${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hh 
+			${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.hpp
+		)
+		#putting them in source groups. Very useful for VS.
+		if(WIN32)
+			foreach( header ${${PROJECT_NAME}_${target_name}_HEADERS} )
+				get_filename_component(folder ${header} DIRECTORY)
+				string(REPLACE "/" "\\" folder ${folder})
+				SOURCE_GROUP("${folder}" FILES ${header})
+			endforeach(header)
+		endif(WIN32)
+		
+		FILE(GLOB_RECURSE ${PROJECT_NAME}_${target_name}_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}"
+			${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.c
+			${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cpp
+			${${PROJECT_NAME}_${target_name}_SRC_DIR}/*.cc
+		)
+		#putting them in source groups. Very useful for VS.
+		if(WIN32)
+			foreach( source ${${PROJECT_NAME}_${target_name}_SOURCES} )
+				get_filename_component(folder ${source} DIRECTORY)
+				string(REPLACE "/" "\\" folder ${folder})
+				SOURCE_GROUP("${folder}" FILES ${source})
+			endforeach(source)
+		endif(WIN32)
+		
+		message ( STATUS "== Headers detected in ${${PROJECT_NAME}_INCLUDE_DIR}/${target_name} and ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_HEADERS}" )
+		message ( STATUS "== Sources detected in ${${PROJECT_NAME}_${target_name}_SRC_DIR} : ${${PROJECT_NAME}_${target_name}_SOURCES}" )
+		
+			#Generating config file
+		file( WRITE ${${PROJECT_NAME}_${target_name}_SRC_DIR}/CMakeLists.txt 
+"### Sourcelist file for ${PROJECT_NAME}_${target_name} auto generated by WkCmake ###
+
+SET(${PROJECT_NAME}_${target_name}_HEADERS ${${PROJECT_NAME}_${target_name}_HEADERS} PARENT_SCOPE)
+SET(${PROJECT_NAME}_${target_name}_SOURCES ${${PROJECT_NAME}_${target_name}_SOURCES} PARENT_SCOPE)
+"		)
+		
+	ENDIF(${PROJECT_NAME}_${target_name}_GENERATE_SOURCELIST)
+	
+	
+endmacro (WkGenSourceList)
 
 macro (WkBuildTypeConfig)
 
