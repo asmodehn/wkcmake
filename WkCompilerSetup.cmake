@@ -89,6 +89,28 @@ macro(WkAddCDefinitions Build)
 	ENDIF ()
 endmacro(WkAddCDefinitions Build)
 
+# Usage : WkRmDefaultCFlags( "FLAG_TO_MODIFY -new -flags" )
+macro(WkRmFlags FLAG)
+	IF ( ${FLAG} )
+		#explode string as list
+		set(CURRENT_C_ARGS ${${FLAG}})
+		separate_arguments(CURRENT_C_ARGS)
+		# remove items from list
+		LIST(REMOVE_ITEM CURRENT_C_ARGS ${ARGN})
+		
+		#rewrite all arguments as string
+		set(NEW_FLAGS "")
+		foreach(f ${CURRENT_C_ARGS})
+			message(${f})
+			set(NEW_FLAGS "${NEW_FLAGS}${f} " )
+		endforeach(f)
+		set(${FLAG} ${NEW_FLAGS} CACHE STRING "" FORCE)
+	ELSE ( ${FLAG} )
+		message(${FLAG} " not set!")
+	ENDIF ( ${FLAG} )
+		
+endmacro(WkRmFlags)	
+
 # Usage : WkSetCXXFlags( "-new -flags" )
 macro(WkSetCXXFlags)
 	SET(${PROJECT_NAME}_CXX_FLAGS "${ARGN}" CACHE STRING "${PROJECT_NAME} Flags for C++ Compiler.")
