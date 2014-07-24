@@ -101,7 +101,6 @@ macro(WkRmFlags FLAG)
 		#rewrite all arguments as string
 		set(NEW_FLAGS "")
 		foreach(f ${CURRENT_C_ARGS})
-			message(${f})
 			set(NEW_FLAGS "${NEW_FLAGS}${f} " )
 		endforeach(f)
 		set(${FLAG} ${NEW_FLAGS} CACHE STRING "" FORCE)
