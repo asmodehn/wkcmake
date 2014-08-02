@@ -103,15 +103,21 @@ CMAKE_POLICY(VERSION 2.6)
 	project(${project_name_arg} ${ARGN})
 	
 	#if a version has been defined we put it in cache
+	#TODO : CMake has now a special handleing for _VERSION variable. => to fix.
 	if ( ${PROJECT_NAME}_VERSION )
 		set( ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION} CACHE STRING "Version for ${PROJECT_NAME}")
 	endif ( ${PROJECT_NAME}_VERSION )
 	
 	#To add this project as a source dependency to a master project
 	if ( NOT ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
-		set (${CMAKE_PROJECT_NAME}_SRCDEPENDS ${${CMAKE_PROJECT_NAME}_SRCDEPENDS} ${PROJECT_NAME} PARENT_SCOPE) 
+		#MESSAGE("Adding ${PROJECT_NAME} in ${CMAKE_PROJECT_NAME}_SRCDEPENDS")
+		
 		# NOT IN CACHE because it needs to change everytime. no change ( as with cache ) means error ( not a wkcmake dependency )
 		# IN PARENT SCOPE, so a call to add_subdirectory can retrieve it
+		set (${CMAKE_PROJECT_NAME}_SRCDEPENDS ${${CMAKE_PROJECT_NAME}_SRCDEPENDS} ${PROJECT_NAME} PARENT_SCOPE) 
+		
+		# IN LOCAL SCOPE, in case there are calls to add_subdirectory from this one.
+		set (${CMAKE_PROJECT_NAME}_SRCDEPENDS ${${CMAKE_PROJECT_NAME}_SRCDEPENDS} ${PROJECT_NAME})
 	endif()
 	
 	message(STATUS "= Configuring ${PROJECT_NAME}")

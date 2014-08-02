@@ -158,8 +158,10 @@ macro (WkSrcDepends dir_name)
 		#TODO : Make sure the add_subdirectory does what it is supposed to
 		# and that we dont add another different project...
 		list(LENGTH ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize_before)
+		#MESSAGE ("IN ${PROJECT_NAME} before addsubdir srcdependslist = ${${CMAKE_PROJECT_NAME}_SRCDEPENDS}")
 		add_subdirectory(${dir_name} ${CMAKE_CURRENT_BINARY_DIR}/${dir_name})
 		list(LENGTH ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize_after)
+		#MESSAGE ("IN ${PROJECT_NAME} after addsubdir srcdependslist = ${${CMAKE_PROJECT_NAME}_SRCDEPENDS}")
 		
 		if ( dpdlsize_before EQUAL dpdlsize_after )
 			#NOT a WKCMAKE project ( OR ERROR ?? )
@@ -167,8 +169,9 @@ macro (WkSrcDepends dir_name)
 			# WHAT CAN WE DO MORE HERE ??
 			message(WARNING "${dir_name} is not a CMake project. You will need to manually link to it in CMakeLists.txt")
 		else ()
-			#WKCMAKE project. we can get his name.
-			list ( GET ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize-1 subprj_name )
+			#WKCMAKE project. we can get his name ( last from the list ).
+			list ( GET ${CMAKE_PROJECT_NAME}_SRCDEPENDS -1 subprj_name )
+			#MESSAGE("${CMAKE_PROJECT_NAME}_SRCDEPENDS subprj : ${subprj_name}")
 			
 			#defining ${subprj_name}_DIR as build directory.
 			#We need it later to get location of libraries and other build results, to work in the same way as bin dependencies.
