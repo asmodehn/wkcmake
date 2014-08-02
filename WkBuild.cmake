@@ -49,7 +49,8 @@ include ( "${WKCMAKE_DIR}/WkPlatform.cmake")
 #To setup the compiler
 include ( "${WKCMAKE_DIR}/WkCompilerSetup.cmake" )
 
-
+#TODO : WkIncludeDirs (dir [ dir2 [ dir3] ])
+#WkIncludeDir (dir)
 macro(WkIncludeDir dir)
 	if (${PROJECT_NAME} STREQUAL "Project")
 		message(FATAL_ERROR "WkIncludeDir() has to be called after WkProject()")
@@ -59,6 +60,7 @@ macro(WkIncludeDir dir)
 	endif()
 endmacro(WkIncludeDir dir)
 
+###< deprecated ###
 macro(WkSrcDir dir)
 	message (AUTHOR_WARNING "WkSrcDir is deprecated since multi target support has been added. You can now specify the source directory directly when calling WkLibraryBuild() or WkExecutableBuild().")
 	if (${PROJECT_NAME} STREQUAL "Project")
@@ -68,6 +70,7 @@ macro(WkSrcDir dir)
 		mark_as_advanced ( ${PROJECT_NAME}_SRC_DIR )
 	endif()
 endmacro(WkSrcDir dir)
+### deprecated >###
 
 macro(WkBinDir dir)
 	if (${PROJECT_NAME} STREQUAL "Project")

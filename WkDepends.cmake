@@ -187,7 +187,11 @@ macro (WkSrcDepends dir_name)
 				#Gettin all additional include directories
 				set ( ${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS ${subprj_include_wk_path} ${subprj_include_path} )
 				foreach( path ${${subprj_name}_INCLUDE_DIRS} )
-					file( TO_CMAKE_PATH ${dir_name}/${path} cmake_path)
+					if ( NOT IS_ABSOLUTE ${path} )
+						file( TO_CMAKE_PATH ${dir_name}/${path} cmake_path)
+					else()
+						file( TO_CMAKE_PATH ${path} cmake_path)
+					endif()
 					set ( ${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS ${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS} ${cmake_path} )
 				endforeach (path)
 				
@@ -196,6 +200,9 @@ macro (WkSrcDepends dir_name)
 				include_directories(${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS})
 				message ( STATUS "== Source Dependency ${subprj_name} include : ${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS} OK !")
 
+				#adding include directories to this project include directories. useful if this project's parent wants to use something from this project's child.
+				set ( ${PROJECT_NAME}_INCLUDE_DIRS ${${PROJECT_NAME}_INCLUDE_DIRS} ${${PROJECT_NAME}_${subprj_name}_INCLUDE_DIRS})
+				
 				set ( WK_${PROJECT_NAME}_FOUND_${subprj_name} ON )
 				#this is not necessary if WkPlatform does the job as it should
 				#add_definitions(-D WK_${PROJECT_NAME}_FOUND_${subprj_name})
