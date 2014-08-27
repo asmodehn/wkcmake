@@ -158,10 +158,10 @@ macro (WkSrcDepends dir_name)
 		#TODO : Make sure the add_subdirectory does what it is supposed to
 		# and that we dont add another different project...
 		list(LENGTH ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize_before)
-		#MESSAGE ("IN ${PROJECT_NAME} before addsubdir srcdependslist = ${${CMAKE_PROJECT_NAME}_SRCDEPENDS}")
+		MESSAGE ("IN ${PROJECT_NAME} before addsubdir srcdependslist = ${${CMAKE_PROJECT_NAME}_SRCDEPENDS}")
 		add_subdirectory(${dir_name} ${CMAKE_CURRENT_BINARY_DIR}/${dir_name})
 		list(LENGTH ${CMAKE_PROJECT_NAME}_SRCDEPENDS dpdlsize_after)
-		#MESSAGE ("IN ${PROJECT_NAME} after addsubdir srcdependslist = ${${CMAKE_PROJECT_NAME}_SRCDEPENDS}")
+		MESSAGE ("IN ${PROJECT_NAME} after addsubdir srcdependslist = ${${CMAKE_PROJECT_NAME}_SRCDEPENDS}")
 		
 		if ( dpdlsize_before EQUAL dpdlsize_after )
 			#NOT a WKCMAKE project ( OR ERROR ?? )

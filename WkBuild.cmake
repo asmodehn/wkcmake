@@ -121,6 +121,8 @@ CMAKE_POLICY(VERSION 2.6)
 		
 		# IN LOCAL SCOPE, in case there are calls to add_subdirectory from this one.
 		set (${CMAKE_PROJECT_NAME}_SRCDEPENDS ${${CMAKE_PROJECT_NAME}_SRCDEPENDS} ${PROJECT_NAME})
+		
+		#TODO : FIX this, the strategy to set it into ${CMAKE_PROJECT_NAME}_SRCDEPENDS will not work when we have dependencies at multiple levels.
 	endif()
 	
 	message(STATUS "= Configuring ${PROJECT_NAME}")
@@ -682,7 +684,9 @@ macro (WkExportConfig target1 )
 	
 	foreach ( tgt ${target1};${ARGN})
 		#Linking source dependencies, and modifying config files
+		message ("PROJECT : ${PROJECT_NAME}")
 		foreach (sdep ${${PROJECT_NAME}_SRCDEPENDS} )
+			message ("deps : ${sdep}")
 			WkLinkSrcDepends( ${tgt} ${sdep} )
 		endforeach()
 	endforeach()
