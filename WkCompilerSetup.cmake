@@ -155,6 +155,7 @@ macro(WkAddCXXDefinitions Build)
 	ENDIF ()
 endmacro(WkAddCXXDefinitions Build)
 
+#TODO : Change usage: All | Debug | Release might not alway be obvious to use...
 # Usage : WkSetExeLinkerFlags( Build [flags] )
 macro(WkSetExeLinkerFlags Build)
 	IF (${Build} STREQUAL All )
