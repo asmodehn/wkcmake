@@ -128,6 +128,13 @@ macro(WkAddCXXFlags)
 	ENDIF ( ${PROJECT_NAME}_CXX_FLAGS )
 endmacro(WkAddCXXFlags)
 
+macro(WkAddDefaultCXXFlagsDebug)
+	STRING(FIND CMAKE_CXX_FLAGS_DEBUG ${ARGN} already_stored)
+	IF( ${already_stored} LESS 0)
+		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${ARGN}" CACHE STRING "CMAKE Flags for C++ Compiler." FORCE)
+	ENDIF()
+endmacro(WkAddDefaultCXXFlagsDebug)
+
 # Usage : WkAddCXXDefinitions( [Debug|Release] [newdef1] [newdef2] )
 macro(WkAddCXXDefinitions Build)
 	IF ( ${PROJECT_NAME}_CXX_DEFINITIONS_DEBUG AND ${Build} STREQUAL Debug )
