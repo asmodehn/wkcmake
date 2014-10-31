@@ -1,5 +1,6 @@
 WkCmake
 =======
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/asmodehn/wkcmake?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 WkCMake is aimed at simplifying CMake builds by making some assumptions :
  - The hierarchy of project you are using is usually similar between all of your projects,  a source directory, a header directory, some data and some tests, maybe...
