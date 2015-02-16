@@ -238,11 +238,19 @@ WK_${PROJECT_NAME}_${lib}_LOCAL int WkDebug();
 	
 	# This configure replaces all variables in the file with ${} with CMAKE ones, as usual in CMake...
 	configure_file(${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.h.in ${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.h )
-	configure_file(${WKCMAKE_DIR}/WkPlatform.c.config ${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.c )
+	if(APPLE)
+	  configure_file(${WKCMAKE_DIR}/WkPlatform.c.config ${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.cpp )
+	else()
+	  configure_file(${WKCMAKE_DIR}/WkPlatform.c.config ${PROJECT_BINARY_DIR}/CMakeFiles/WkPlatform_${PROJECT_NAME}.c )
+	endif()
 endmacro(WkPlatformConfigure)
 
 macro(AddPlatformCheckSrc VAR )
-	SET( ${VAR} "${${VAR}}" "CMakeFiles/WkPlatform_${PROJECT_NAME}.c")
+	if(APPLE)
+	  SET( ${VAR} "${${VAR}}" "CMakeFiles/WkPlatform_${PROJECT_NAME}.cpp")
+	else()
+	  SET( ${VAR} "${${VAR}}" "CMakeFiles/WkPlatform_${PROJECT_NAME}.c")
+	endif()
 endmacro(AddPlatformCheckSrc VAR )
 
 
